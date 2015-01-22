@@ -6,7 +6,7 @@ Gitter Desktop Client (Windows)
 The Gitter Desktop client is written using [NW.js](http://nwjs.io/) and will soon be available as open source. 
 
 ## Downloads
-> During the Alpha phase, the targeted platform is windows.
+> During the Alpha release, Windows will be the only targeted platform.
 
 #### Windows
 - **Alpha**, 22 Jan 2015 — [v2.0.4](http://update.gitter.im/nw/GitterSetup.exe)
