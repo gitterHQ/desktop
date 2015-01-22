@@ -1,4 +1,4 @@
-Gitter Desktop Client (Windows)
+Gitter Desktop Client
 ===============================
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gitterHQ/desktop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
