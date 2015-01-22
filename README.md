@@ -10,6 +10,6 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/) and will soo
 The Windows alpha is now [available to download](http://update.gitter.im/nw/GitterSetup.exe).
 
 ## Enabling Logging
-To enable logging on Windows, please [follow this guide](https://gist.github.com/trevorah/bfeb4ad69e4633dc76c5). For OSX and Linux, you should be able to see logging on your terminal.
+To enable logging on Windows, please [follow this guide](https://gist.github.com/trevorah/bfeb4ad69e4633dc76c5).
 
 
