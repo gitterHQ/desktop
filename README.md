@@ -10,7 +10,7 @@ Downloads
 
 For the official downloads, please visit [https://gitter.im/apps](https://gitter.im/apps).
 
-*Beta downloads*
+**Beta downloads**
 
 * [Linux 32-bit deb package](https://update.gitter.im/linux32/gitter_2.2.2_i386.deb)
 * [Linux 64-bit deb package](https://update.gitter.im/linux64/gitter_2.2.2_amd64.deb)
