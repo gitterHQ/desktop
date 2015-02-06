@@ -7,12 +7,14 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/) and is plann
 
 Downloads
 ---------
-> During the Alpha release, Windows will be the only targeted platform.
 
-* [Windows](https://update.gitter.im/win/latest)
+For the official downloads, please visit [https://gitter.im/apps](https://gitter.im/apps).
+
+*Beta downloads*
+
 * [Linux 32-bit](https://update.gitter.im/linux32/gitter_2.2.2_i386.deb)
 * [Linux 64-bit](https://update.gitter.im/linux64/gitter_2.2.2_amd64.deb)
-* [~~OSX~~]() (Coming soon)
+* [~~OSX~~]() Official version availabe on apps page, NWJS version coming soon
 
 Enabling Logging
 ----------------
