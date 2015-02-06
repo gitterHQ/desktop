@@ -10,8 +10,9 @@ Downloads
 > During the Alpha release, Windows will be the only targeted platform.
 
 * [Windows](https://update.gitter.im/win/latest)
+* [Linux 32-bit](https://update.gitter.im/linux32/gitter_2.2.2_i386.deb)
+* [Linux 64-bit](https://update.gitter.im/linux64/gitter_2.2.2_amd64.deb)
 * [~~OSX~~]() (Coming soon)
-* [~~Linux~~]() (Coming soon)
 
 Enabling Logging
 ----------------
