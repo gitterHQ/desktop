@@ -12,18 +12,33 @@ For the official downloads, please visit [https://gitter.im/apps](https://gitter
 
 **Beta downloads**
 
-* [Linux 32-bit deb package](https://update.gitter.im/linux32/gitter_2.2.2_i386.deb)
-* [Linux 64-bit deb package](https://update.gitter.im/linux64/gitter_2.2.2_amd64.deb)
+* [Linux 32-bit deb package](https://update.gitter.im/linux32/gitter_2.2.3_i386.deb)
+* [Linux 64-bit deb package](https://update.gitter.im/linux64/gitter_2.2.3_amd64.deb)
 * [~~OSX~~]() Official version availabe on apps page, NWJS version coming soon
 
 More Linux distributions will be made available soon.
 
-Enabling Logging
-----------------
+
+Tray icon on Ubuntu
+-------------------
+
+To see the Gitter tray icon run:
+
+```
+sudo apt-add-repository ppa:gurqn/systray-trusty
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+More info [here](http://ubuntuforums.org/showthread.php?t=2217458).
+
+Enabling Logging on Windows
+---------------------------
 To enable logging on Windows, please [follow this guide](https://gist.github.com/trevorah/bfeb4ad69e4633dc76c5).
 
 Changelog
 ---------
+* 2015-02-09 `2.2.3` Fix Ubuntu libudev symlinking
 * 2015-02-04 `2.2.2` oauth fixes
 * 2015-02-04 `2.2.1` oauth fixes
 * 2015-02-04 `2.2.0` fixed autoupdater trashing the uninstaller
