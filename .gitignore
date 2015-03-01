@@ -1,0 +1,17 @@
+.DS_Store
+.ruby-version
+*.sw*
+*.deb
+*.dmg
+keys.json
+isolate-*-v8.log
+node_modules
+latest
+cache
+output
+opt
+nwapp/oauth.json
+nwapp/snapshots/*.bin
+certificates/*
+artefacts/*
+snapshot_source*.js

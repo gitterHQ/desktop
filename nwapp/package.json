@@ -1,0 +1,57 @@
+{
+  "name": "Gitter",
+  "description": "Where developers come to talk.",
+  "version": "2.2.5",
+  "main": "app://gitter/index.html",
+  "window": {
+    "icon": "./img/logo.png",
+    "show": false,
+    "toolbar": false,
+    "frame": true,
+    "width": 1200,
+    "height": 800,
+    "position": "center",
+    "min_width": 200,
+    "min_height": 200,
+    "max_width": 8000,
+    "max_height": 8000
+  },
+  "webkit": {
+    "plugin": false,
+    "page-cache": true
+  },
+  "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
+  "dependencies": {
+    "gitter-realtime-client": "^0.1.8",
+    "jfs": "^0.2.4",
+    "mac-sounds": "^0.1.1",
+    "node-webkit-updater": "^0.2.3",
+    "node-webkit-winstate": "^1.0.2",
+    "oauth": "^0.9.12",
+    "open": "0.0.5"
+  },
+  "manifestUrl": "https://update.gitter.im/desktop/package.json",
+  "packages": {
+    "win": {
+      "url": "https://update.gitter.im/win/win32.zip"
+    },
+    "mac": {
+      "url": "https://update.gitter.im/osx/osx.zip"
+    }
+  },
+  "single-instance": false,
+  "platformOverrides": {
+    "osx64": {
+      "snapshot": "./snapshots/snapshot_osx64.bin"
+    },
+    "linux32": {
+      "snapshot": "./snapshots/snapshot_linux32.bin"
+    },
+    "linux64": {
+      "snapshot": "./snapshots/snapshot_linux64.bin"
+    },
+    "win32": {
+      "snapshot": "./snapshots/snapshot_win32.bin"
+    }
+  }
+}

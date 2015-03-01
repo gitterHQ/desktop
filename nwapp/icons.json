@@ -1,0 +1,22 @@
+{
+  "osx" : {
+    "disconnected" : "img/osx-icon-logo-disconnected.tiff",
+    "connected" : "img/osx-icon-logo-connected.tiff",
+    "unread" : "img/osx-icon-logo-connected-unread.tiff",
+    "selected" : "img/osx-icon-logo-connected-selected.tiff"
+  },
+  "win" : {
+    "disconnected" : "img/icon-logo-disconnected.png",
+    "connected" : "img/icon-logo-connected.png",
+    "unread" : "img/icon-logo-connected-unread.png",
+    "selected" : "img/icon-logo-connected-selected.png"
+  },
+  "linux" : {
+    "disconnected" : "img/linux-icon-logo-disconnected.png",
+    "connected" : "img/linux-icon-logo-connected.png",
+    "unread" : "img/linux-icon-logo-connected-unread.png",
+    "selected" : "img/linux-icon-logo-connected.png"
+  }
+}
+
+

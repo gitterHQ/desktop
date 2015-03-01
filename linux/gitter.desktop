@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Gitter
+Comment=Where developers come to talk
+Exec=/opt/Gitter/{{arch}}/Gitter
+Icon=/opt/Gitter/{{arch}}/logo.png
+Terminal=false
+Type=Application
+Categories=Utility;

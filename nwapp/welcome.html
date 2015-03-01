@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Gitter</title>
+    <link href='./main.css' media='all' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div class='welcome'>
+      <h1>Welcome</h1>
+      <p>To get started sign in and create an application at <a class='js-dev' href='https://developer.gitter.im/docs/welcome'>developer.gitter.im</a> and set the redirect URL to <code>app://gitter/oauth.html</code></p>
+      <p>Once you have created the application, simply populate <code>oauth.json</code> with your respective <code>key</code> and <code>secret</code>.</p>
+      <small>&hearts; The Gitter Team</small>
+    </div>
+    <script type='text/javascript'>
+      var openExternalUrl = window.require('open');
+      var link = document.querySelector('.js-dev');
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        openExternalUrl(link.href);
+      });
+    </script>
+  </body>
+</html>

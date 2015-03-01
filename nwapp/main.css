@@ -1,0 +1,16 @@
+html, body {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
+  font-family: helvetica, arial, sans-serif;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.welcome {
+  padding: 0.625em;
+}
