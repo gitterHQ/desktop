@@ -38,7 +38,8 @@ For the official downloads, please visit [https://gitter.im/apps](https://gitter
 
 Changelog
 ---------
-* 2015-02-12 `2.2.4` - fixes issues with tray and badge disconnecting.
+* 2015-02-20 `2.2.5` - realtime connection stabilty fixes
+* 2015-02-12 `2.2.4` - fixes issues with tray and badge disconnecting
 * 2015-02-09 `2.2.3` — fix Ubuntu libudev symlinking
 * 2015-02-04 `2.2.2` — oauth fixes
 * 2015-02-04 `2.2.1` — oauth fixes
