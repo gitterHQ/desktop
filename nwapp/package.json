@@ -26,7 +26,7 @@
     "jfs": "^0.2.4",
     "mac-sounds": "^0.1.1",
     "node-webkit-updater": "^0.2.3",
-    "node-webkit-winstate": "^1.0.2",
+    "node-webkit-winstate": "^1.1.0",
     "oauth": "^0.9.12",
     "open": "0.0.5"
   },
