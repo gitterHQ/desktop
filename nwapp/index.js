@@ -1,4 +1,3 @@
-/* global secrets: true */
 'use strict';
 
 var log = require('loglevel');
@@ -8,11 +7,8 @@ log.setLevel('debug');
 var CLIENT = require('./utils/client-type');
 var CONFIG = require('./utils/config');
 
-var os = require('os');
-var fs = require('fs');
 var gui = require('nw.gui');
 var pkg = require('./package.json');
-var openExternalUrl = require('open');
 var Gitter = require('gitter-realtime-client');
 
 var settings = require('./utils/settings');
@@ -210,11 +206,11 @@ function showAuth() {
   });
 }
 
-function signout(e) {
+function signout() {
   log.trace('signout()');
 
   flushCookies()
-    .then(function (flushed) {
+    .then(function () {
       settings.token = null;
 
       // only close the window if we can, otherwise app may crash
@@ -248,7 +244,7 @@ function showLoggedInWindow(exec) {
   var menu = new CustomMenu({
     items: MENU_ITEMS,
     label: 'Gitter',
-    filter: function (item, index, arr) {
+    filter: function (item) {
 
       if (item.support && item.support.indexOf(CLIENT) < 0 ) {
         return false;
@@ -292,7 +288,7 @@ function showLoggedInWindow(exec) {
     mainWindowFocused = true;
     // TODO: Remove this hack
     var toExec = "var cf = document.getElementById('content-frame'); if (cf) cf.contentWindow.dispatchEvent(new Event('focus'));";
-    var execResult = mainWindow.eval(mainWindow.window.document.getElementById('mainframe'),toExec);
+    mainWindow.eval(mainWindow.window.document.getElementById('mainframe'),toExec);
   });
 
   mainWindow.on('blur', function () {
@@ -300,7 +296,7 @@ function showLoggedInWindow(exec) {
     mainWindowFocused = false;
     // TODO: Remove this hack
     var toExec = "var cf = document.getElementById('content-frame'); if (cf) cf.contentWindow.dispatchEvent(new Event('blur'));";
-    var execResult = mainWindow.eval(mainWindow.window.document.getElementById('mainframe'),toExec);
+    mainWindow.eval(mainWindow.window.document.getElementById('mainframe'),toExec);
   });
 
   mainWindow.on('new-win-policy', function (frame, url, policy) {
@@ -349,9 +345,9 @@ function deleteCookie(cookie) {
   });
 }
 
-function fetchAllCookies(spec) {
+function fetchAllCookies() {
   log.trace('fetchAllCookies()');
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     win.cookies.getAll({}, function (cookies) {
       resolve(cookies);
     });
@@ -359,7 +355,7 @@ function fetchAllCookies(spec) {
 }
 
 function flushCookies() {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     fetchAllCookies()
       .then(function (cookies) {
         log.debug('got ' + cookies.length + ' cookies');
