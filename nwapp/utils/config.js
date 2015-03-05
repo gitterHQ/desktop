@@ -1,7 +1,6 @@
-/* jslint node: true, browser: true */
 /* global OAUTH: true */
 'use strict';
-var log = require('./log');
+
 var gui = window.require('nw.gui');
 
 /*
@@ -18,7 +17,7 @@ var key = (process.env.OAUTH_KEY || typeof OAUTH !== 'undefined' && OAUTH.key).t
 var secret = (process.env.OAUTH_SECRET || typeof OAUTH !== 'undefined' && OAUTH.secret).trim();
 
 if (!key || !secret) {
-  var win = gui.Window.get(window.open('../welcome.html')); // WC: instructions for developers
+  /*var win = */gui.Window.get(window.open('../welcome.html')); // WC: instructions for developers
   throw new Error('You must provide a key. Keys can be obtained from https://developer.gitter.im');
 }
 

@@ -24,6 +24,7 @@
   "dependencies": {
     "gitter-realtime-client": "^0.1.9",
     "jfs": "^0.2.4",
+    "loglevel": "^1.2.0",
     "mac-sounds": "^0.1.1",
     "node-webkit-updater": "^0.2.3",
     "node-webkit-winstate": "^1.1.0",

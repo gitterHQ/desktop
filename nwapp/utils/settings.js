@@ -1,10 +1,9 @@
-/* jshint node: true, browser: true */
 'use strict';
 
 var Store = require('jfs');
 var gui = window.require('nw.gui');
 var events = require('./custom-events');
-var log = require('./log');
+var log = require('loglevel');
 var SOUNDS = require('./sounds');
 
 function isBool(val) {
@@ -43,7 +42,7 @@ Object.observe(settings, function (changes) {
   db.save('settings', settings, function (err) {
     // emit an event which indicates failure or success
     if (err) {
-      log('ERROR: Could not save settings.');
+      log.error('ERROR: Could not save settings.');
       return events.emit('settings:failed', err);
     }
     events.emit('settings:saved');
@@ -67,7 +66,7 @@ Object.keys(DEFAULT_SETTINGS)
     var isValid = DEFAULT_SETTINGS[key].validate(settings[key]);
 
     if (!isValid) {
-      log('ERROR: Invalid setting:', key, '. restoring to default');
+      log.warn('ERROR: Invalid setting:' + key + '. restoring to default');
       settings[key] = DEFAULT_SETTINGS[key].value;
     }
   });

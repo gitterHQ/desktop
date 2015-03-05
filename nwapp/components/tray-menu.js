@@ -1,11 +1,9 @@
-/* jshint node: true, browser: true */
 'use strict';
 
 var gui = window.require('nw.gui');
 var Gitter = window.require('gitter-realtime-client');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
-var log = require('../utils/log');
 
 function TrayMenu() {
   this.menu = new gui.Menu();
@@ -48,7 +46,6 @@ TrayMenu.prototype.setRooms = function (rooms) {
 };
 
 TrayMenu.prototype.clear = function () {
-  // log('TrayMenu:clear() ====================');
   for (var i = this.menu.items.length - 1; i >= 0; i--) {
     this.menu.removeAt(i);
   }
@@ -62,7 +59,6 @@ TrayMenu.prototype.addDefaults = function () {
 };
 
 TrayMenu.prototype.build = function () {
-  // log('TrayMenu:build() ====================');
   this.clear();
 
   if (this.unreads.length > 0) {
@@ -81,7 +77,6 @@ TrayMenu.prototype.build = function () {
 };
 
 TrayMenu.prototype.addSection = function (spec, index, arr) {
-  // log('TrayMenu:addSection() ====================');
   if (spec.collection.length <= 0) return;
 
   var appendRoom = function (room) {

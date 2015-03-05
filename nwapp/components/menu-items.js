@@ -1,7 +1,5 @@
-/* jshint node: true, browser: true */
 'use strict';
 
-var log = require('../utils/log');
 var gui = window.require('nw.gui');
 var pkg = require('../package.json');
 var settings = require('../utils/settings');

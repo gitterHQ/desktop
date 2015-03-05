@@ -1,7 +1,6 @@
-/* jshint node: true, browser: true */
 'use strict';
 
-var log = require('./log');
+var log = require('loglevel');
 var notifier = require('./notifier');
 var pkg = require('../package.json');
 var gui = window.require('nw.gui');
@@ -14,9 +13,9 @@ var updater = new Updater(pkg);
 // Promise wrapper for udpater.checkForNewVersion
 function checkForNewVersion() {
   return new Promise(function (resolve, reject) {
-    log('Checking for updates');
+    log.info('Checking for updates');
     updater.checkNewVersion(function (err, newVersionExists, newManifest) {
-      log('newVersionExists', newVersionExists);
+      log.info('newVersionExists? ' + newVersionExists);
       if (err || !newVersionExists) return reject();
       resolve(newManifest);
     });
@@ -34,7 +33,7 @@ function download(newManifest) {
       reject(new Error('Should not download auto update for ' + CLIENT));
       return;
     }
-    log('Downloading update');
+    log.info('Downloading update');
     updater.download(function (err, filename) {
       return err ? reject(err) : resolve({filename: filename, newManifest: newManifest});
     }, newManifest);
@@ -44,7 +43,7 @@ function download(newManifest) {
 // Promise wrapper for updater.unpack
 function unpack(filename, newManifest) {
   return new Promise(function (resolve, reject) {
-    log('Unpacking update');
+    log.info('Unpacking update');
     updater.unpack(filename, function (err, newAppPath) {
       return err ? reject(err) : resolve(newAppPath);
     }, newManifest);
@@ -54,7 +53,7 @@ function unpack(filename, newManifest) {
 // Promise wrapper for updater.install
 function install(copyPath) {
   return new Promise(function (resolve, reject) {
-    log('Installing at', copyPath);
+    log.info('Installing at' + copyPath);
     updater.install(copyPath, function (err) {
       return err ? reject(err) : resolve();
     });
@@ -79,9 +78,9 @@ function pollForUpdates() {
     .then(function (newAppPath) {
 
       function restart() {
-        log('Running Installer');
+        log.info('Running Installer');
         updater.runInstaller(newAppPath, [updater.getAppPath(), updater.getAppExec()], {});
-        log('Quitting outdated app');
+        log.info('Quitting outdated app');
         gui.App.quit();
       }
 
@@ -98,7 +97,7 @@ function pollForUpdates() {
       setInterval(restartNotification, 30 * 1000);
     })
     .catch(function (err) {
-      log('[Update Error]: ', err.stack);
+      log.error('[Update Error]: ' + err.stack);
     });
 }
 
@@ -116,19 +115,19 @@ function finishUpdate() {
     // [1] https://github.com/edjafarov/node-webkit-updater/blob/master/examples/basic.js#L29
     // https://github.com/edjafarov/node-webkit-updater/blob/master/app/updater.js#L404-L416
 
-    log('Running new version:', execPath);
+    log.info('Running new version: ' + execPath);
     updater.run(execPath, [], {});
     //gui.Shell.openItem(execPath);
 
     function quitInstaller() {
-      log('Quitting the Installer app');
+      log.info('Quitting the Installer app');
       gui.App.quit();
     }
 
     setTimeout(quitInstaller, 5*1000);
   })
   .catch(function (err) {
-    log('Something went wrong with the update: ', err.stack);
+    log.error('Something went wrong with the update: ' + err.stack);
   });
 }
 

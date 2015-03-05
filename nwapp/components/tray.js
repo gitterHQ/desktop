@@ -1,8 +1,7 @@
-/* jshint node: true, browser: true */
 'use strict';
+
 var gui = window.require('nw.gui');
 var settings = require('../utils/settings');
-var log = require('../utils/log');
 var events = require('../utils/custom-events');
 
 var CLIENT_TYPE = require('../utils/client-type');

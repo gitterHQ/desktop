@@ -1,12 +1,9 @@
-/* jshint node: true, browser: true */
 'use strict';
 
-var log = require('./log');
+var log = require('loglevel');
 var settings = require('./settings');
-var events = require('./custom-events');
 
 var gui = window.require('nw.gui');
-log('window.location.href:', window.location.href);
 var win = gui.Window.get();
 
 var CLIENT = require('./client-type');
@@ -20,7 +17,7 @@ function getNotificationImageForUri(uri) {
 }
 
 function playNotificationSound() {
-  log('playNotificationSound() ====================');
+  log.trace('playNotificationSound()');
   var audio = win.window.document.createElement('audio');
   var sound = SOUNDS_ITEMS[settings.notificationSound];
 
@@ -34,7 +31,7 @@ function playNotificationSound() {
 }
 
 module.exports = function (spec) {
-  log('notify() ====================');
+  log.trace('notify()');
   if (!settings.showNotifications) return;
   playNotificationSound();
 

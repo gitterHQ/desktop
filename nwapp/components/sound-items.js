@@ -1,6 +1,5 @@
-/* jshint node: true, browser: true */
 'use strict';
-var log = require('../utils/log');
+
 var events = require('../utils/custom-events');
 var settings = require('../utils/settings');
 var SOUNDS = require('../utils/sounds');

@@ -1,14 +1,11 @@
-/* jshint node: true, browser: true */
 'use strict';
 
-var log = require('../utils/log');
 var events = require('../utils/custom-events');
 var gui = window.require('nw.gui');
 var CLIENT = require('../utils/client-type');
 
 // recursively assembles menus and sub-menus
 function assembleMenu(items, parent) {
-  // log('CustomMenu:assembleMenu() ==============');
   var fold;
 
   parent = parent ? parent : new gui.Menu();
@@ -55,14 +52,12 @@ function CustomMenu(spec) {
 
 // FIXME: this function will probably not work for all platforms
 CustomMenu.prototype.clear = function () {
-  // log('CustomMenu:clear() =================');
   for (var i = this.menu.items.length - 1; i >= 0; i--) {
     this.menu.removeAt(i);
   }
 };
 
 CustomMenu.prototype.build = function () {
-  // log('CustomMenu:build() =================');
   this.clear(); // clear the menu on every "render"
   var filteredItems = this.items;
 

@@ -1,7 +1,5 @@
-/* jshint node: true, browser: true */
 'use strict';
 
-var log = window.require('./utils/log');
 var CONFIG = window.require('./utils/config');
 var gui = window.require('nw.gui');
 var win = gui.Window.get();
@@ -13,7 +11,7 @@ var code = win.window.location.search.match(/code=(\w+)$/);
 
 if (code) {
   var params = { redirect_uri: CONFIG.redirect_uri, grant_type: 'authorization_code'} ;
-  auth.getOAuthAccessToken(code[1], params, function (err, access_token, refresh_token) {
+  auth.getOAuthAccessToken(code[1], params, function (err, access_token /*, refresh_token */) {
     if (err) {
       return win.emit('oauth:error', { token: access_token });
     }

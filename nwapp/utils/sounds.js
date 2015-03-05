@@ -1,8 +1,5 @@
-/* jshint node: true, browser: true */
 'use strict';
 
-// var CLIENT = require('../utils/client-type');
-// TODO: Handle different clients
 module.exports = [
   {
     label: 'None',

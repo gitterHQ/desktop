@@ -1,6 +1,8 @@
-/* jslint node: true, browser: true */
 /* global secrets: true */
 'use strict';
+
+var log = require('loglevel');
+log.setLevel('debug');
 
 // @CONST
 var CLIENT = require('./utils/client-type');
@@ -13,8 +15,6 @@ var pkg = require('./package.json');
 var openExternalUrl = require('open');
 var Gitter = require('gitter-realtime-client');
 
-// utils
-var log = require('./utils/log');
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
 var events = require('./utils/custom-events');
@@ -27,8 +27,8 @@ var CustomMenu = require('./components/menu');
 var TrayMenu = require('./components/tray-menu');
 
 process.on('uncaughtException', function (err) {
-  log('Caught exception: ' + err);
-  log(err.stack);
+  log.error('Caught exception: ' + err);
+  log.error(err.stack);
   process.exit(1);
 });
 
@@ -39,12 +39,12 @@ var authWindow; // log in form
 
 // initialisation as a IIFE
 (function () {
-  log('Gitter', pkg.version);
+  log.info('Gitter' + pkg.version);
   gui.App.addOriginAccessWhitelistEntry(CONFIG.basepath, 'app', 'gitter', true); // whitelists app:// protocol used for the oAuth callback
   // gui.App.setCrashDumpDir(gui.App.dataPath);
 
   if (autoUpdate.isInProgress()) {
-    log('Update in progress...');
+    log.info('Update in progress...');
     return autoUpdate.finishUpdate();
   }
 
@@ -79,7 +79,7 @@ function reopen() {
 
 // initialises and adds listeners to the top level components of the UI
 function initGUI() {
-  log('initGUI() ====================');
+  log.trace('initGUI()');
   win = gui.Window.get();
   win.tray = CustomTray.get();
 
@@ -108,7 +108,7 @@ function initGUI() {
   gui.App.on('reopen', reopen); // When someone clicks on the dock icon, show window again.
 
   win.on('close', function (evt) {
-    log('win:close ====================');
+    log.trace('win:close');
     if (evt === 'quit') {
       gui.App.quit();
     } else {
@@ -165,10 +165,10 @@ function initApp() {
 
   client.on('change:userId', function (userId) {
     events.emit('realtime:connected', rooms);
-    log('realtime connected() ====================');
+    log.trace('realtime connected()');
 
     if (!client) return;
-    log('attempting to subscribe() ====================');
+    log.trace('attempting to subscribe()');
     var subscription = client.subscribe('/v1/user/' + userId, function (msg) {
       if (mainWindowFocused || !msg.notification) return;
 
@@ -191,7 +191,7 @@ function initApp() {
 
 // displays authentication window
 function showAuth() {
-  log('showAuth() ====================');
+  log.trace('showAuth()');
   if (authWindow) return;
   authWindow = gui.Window.get(window.open('./oauth.html'));
 
@@ -200,7 +200,7 @@ function showAuth() {
   });
 
   authWindow.on('oauth:success', function (data) {
-    log('authWindow:loaded ====================');
+    log.trace('authWindow:loaded');
     settings.token = data.token;
     initApp(data.token);
     authWindow.close(true);
@@ -212,7 +212,7 @@ function showAuth() {
 }
 
 function signout(e) {
-  log('signout() ====================');
+  log.trace('signout()');
 
   flushCookies()
     .then(function (flushed) {
@@ -236,7 +236,7 @@ function signout(e) {
  * @void
  */
 function showLoggedInWindow(exec) {
-  log('showLoggedInWindow() ====================');
+  log.trace('showLoggedInWindow()');
 
   mainWindow = gui.Window.get(
     window.open('loggedin.html', {
@@ -283,13 +283,13 @@ function showLoggedInWindow(exec) {
   });
 
   mainWindow.on('closed', function () {
-    log('mainWindow:closed ====================');
+    log.trace('mainWindow:closed');
     mainWindow = null;
     mainWindowFocused = false;
   });
 
   mainWindow.on('focus', function () {
-    log('mainWindow:focus ====================');
+    log.trace('mainWindow:focus');
     mainWindowFocused = true;
     // TODO: Remove this hack
     var toExec = "var cf = document.getElementById('content-frame'); if (cf) cf.contentWindow.dispatchEvent(new Event('focus'));";
@@ -297,7 +297,7 @@ function showLoggedInWindow(exec) {
   });
 
   mainWindow.on('blur', function () {
-    log('mainWindow:blur ====================');
+    log.trace('mainWindow:blur');
     mainWindowFocused = false;
     // TODO: Remove this hack
     var toExec = "var cf = document.getElementById('content-frame'); if (cf) cf.contentWindow.dispatchEvent(new Event('blur'));";
@@ -311,7 +311,7 @@ function showLoggedInWindow(exec) {
 }
 
 function toggleDeveloperTools() {
-  log('toggleDeveloperTools() ====================');
+  log.trace('toggleDeveloperTools()');
   if (mainWindow.isDevToolsOpen()) {
     mainWindow.closeDevTools();
   } else {
@@ -340,10 +340,10 @@ function deleteCookie(cookie) {
     win.cookies.remove({ url: cookie_url, name: cookie.name }, function (result) {
       if (result) {
         result = result[0];
-        log('cookie removed:', result.name, result.value);
+        log.info('cookie removed:' + result.name);
         resolve(result);
       } else {
-        log('failed to remove cookie');
+        log.error('failed to remove cookie');
         reject(new Error('Failed to delete cookie.'));
       }
     });
@@ -351,7 +351,7 @@ function deleteCookie(cookie) {
 }
 
 function fetchAllCookies(spec) {
-  log('fetchAllCookies() ====================');
+  log.trace('fetchAllCookies()');
   return new Promise(function (resolve, reject) {
     win.cookies.getAll({}, function (cookies) {
       resolve(cookies);
@@ -363,15 +363,15 @@ function flushCookies() {
   return new Promise(function (resolve, reject) {
     fetchAllCookies()
       .then(function (cookies) {
-        log('got', cookies.length);
+        log.debug('got ' + cookies.length + ' cookies');
         return Promise.all(cookies.map(deleteCookie));
       })
       .then(function () {
-        log('deleted all cookies');
+        log.info('deleted all cookies');
         resolve(true);
       })
       .catch(function (err) {
-        log(err.stack);
+        log.error(err.stack);
       });
   });
 }
