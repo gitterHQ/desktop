@@ -26,6 +26,8 @@ var CustomTray = require('./components/tray');
 var CustomMenu = require('./components/menu');
 var TrayMenu = require('./components/tray-menu');
 
+var LoginView = require('./login-view');
+
 process.on('uncaughtException', function (err) {
   log('Caught exception: ' + err);
   log(err.stack);
@@ -35,7 +37,7 @@ process.on('uncaughtException', function (err) {
 var win;
 var mainWindow; // this is the chat window (logged in)
 var mainWindowFocused; // Focus tracker. Yes, that's right, NWK doesn't have a way to query if the window is in focus
-var authWindow; // log in form
+var loginView; // log in form
 
 // initialisation as a IIFE
 (function () {
@@ -192,22 +194,19 @@ function initApp() {
 // displays authentication window
 function showAuth() {
   log('showAuth() ====================');
-  if (authWindow) return;
-  authWindow = gui.Window.get(window.open('./oauth.html'));
 
-  authWindow.on('closed', function () {
-    authWindow = null;
+  if (loginView) return;
+
+  loginView = new LoginView(gui.Window);
+
+  loginView.on('accessTokenReceived', function(accessToken) {
+    settings.token = accessToken;
+    initApp(accessToken);
+    loginView.destroy();
   });
 
-  authWindow.on('oauth:success', function (data) {
-    log('authWindow:loaded ====================');
-    settings.token = data.token;
-    initApp(data.token);
-    authWindow.close(true);
-  });
-
-  authWindow.on('oauth:error', function (err) {
-    // FIXME: handle error? maybe should showAuth() again?
+  loginView.on('destroy', function() {
+    loginView = null;
   });
 }
 
