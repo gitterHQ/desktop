@@ -1,10 +1,18 @@
 <html>
   <head>
-    <title>Gitter</title>
-    <link href="main.css" media="all" rel="stylesheet" type="text/css">
+    <title>Gitter Login</title>
+    <script type="text/javascript">
+      var gui = window.require('nw.gui');
+      var win = gui.Window.get();
+      var code = window.location.search.match(/code=(\w+)$/);
+      var error = window.location.search.match(/error=(\w+)$/);
+
+      if (code) {
+        win.emit('codeReceived', code[1]);
+      } else if (error) {
+        console.log(error);
+        win.emit('error', new Error(error[1]));
+      }
+    </script>
   </head>
-  <body>
-    <script src="node_modules/node-webkit-winstate/index.js"></script>
-    <script src="oauth.js" type="text/javascript"></script>
-  </body>
 </html>
