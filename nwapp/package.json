@@ -1,5 +1,5 @@
 {
-  "name": "Gitter",
+  "name": "gitter-desktop-nwapp",
   "description": "Where developers come to talk.",
   "version": "2.2.5",
   "main": "app://gitter/index.html",
@@ -22,7 +22,7 @@
   },
   "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
   "dependencies": {
-    "gitter-realtime-client": "^0.1.8",
+    "gitter-realtime-client": "^0.1.9",
     "jfs": "^0.2.4",
     "mac-sounds": "^0.1.1",
     "node-webkit-updater": "^0.2.3",
@@ -53,5 +53,23 @@
     "win32": {
       "snapshot": "./snapshots/snapshot_win32.bin"
     }
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gitterHQ/desktop.git"
+  },
+  "keywords": [
+    "gitter",
+    "desktop",
+    "nwapp"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gitterHQ/desktop/issues"
+  },
+  "homepage": "https://github.com/gitterHQ/desktop"
 }
