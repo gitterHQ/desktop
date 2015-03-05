@@ -1,5 +1,5 @@
 {
-  "name": "gitter-desktop-nwapp",
+  "name": "Gitter",
   "description": "Where developers come to talk.",
   "version": "2.2.5",
   "main": "app://gitter/index.html",
