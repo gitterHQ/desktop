@@ -1,8 +1,8 @@
 /* jshint node: true, browser: true */
 'use strict';
 
-var log = window.require('./utils/log');
-var config = window.require('./utils/config');
+var log = require('./utils/log');
+var config = require('./utils/config');
 var OAuth2 = require('oauth').OAuth2;
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
