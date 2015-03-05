@@ -26,7 +26,7 @@ var CustomTray = require('./components/tray');
 var CustomMenu = require('./components/menu');
 var TrayMenu = require('./components/tray-menu');
 
-var LoginView = require('./login-view');
+var LoginView = require('./lib/login-view');
 
 process.on('uncaughtException', function (err) {
   log('Caught exception: ' + err);
