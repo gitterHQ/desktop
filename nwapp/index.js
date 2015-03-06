@@ -157,11 +157,11 @@ function initApp() {
 
   // Realtime client to keep track of the user rooms.
   var client = new Gitter.RealtimeClient({
-    websocketsDisabled: true,
     authProvider: function(cb) {
       return cb({ token: token, client: CLIENT });
     }
   });
+
   var rooms = new Gitter.RoomCollection([], { client: client, listen: true });
 
   client.on('change:userId', function (userId) {

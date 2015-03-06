@@ -2,7 +2,7 @@
 
 var gui = window.require('nw.gui');
 var log = require('loglevel');
-var Gitter = window.require('gitter-realtime-client');
+var Gitter = require('gitter-realtime-client');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
 
