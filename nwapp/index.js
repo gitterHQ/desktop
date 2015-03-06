@@ -32,7 +32,7 @@ process.on('uncaughtException', function (err) {
 
 var win;
 var mainWindow; // this is the chat window (logged in)
-var mainWindowFocused; // Focus tracker. Yes, that's right, NWK doesn't have a way to query if the window is in focus
+var mainWindowFocused; // Focus tracker. NWK doesn't have a way to query if the window is in focus
 var loginView; // log in form
 
 // initialisation as a IIFE
@@ -156,9 +156,12 @@ function initApp() {
   });
 
   // Realtime client to keep track of the user rooms.
-  var client = new Gitter.RealtimeClient({ authProvider: function(cb) {
-    return cb({ token: token, client: CLIENT });
-  }});
+  var client = new Gitter.RealtimeClient({
+    websocketsDisabled: true,
+    authProvider: function(cb) {
+      return cb({ token: token, client: CLIENT });
+    }
+  });
   var rooms = new Gitter.RoomCollection([], { client: client, listen: true });
 
   client.on('change:userId', function (userId) {
