@@ -6,9 +6,6 @@ var OAuth2 = require('oauth').OAuth2;
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 
-var oauthKey = config.OAUTH_KEY;
-var oauthSecret = config.OAUTH_SECRET;
-
 var clientId = config.OAUTH_KEY;
 var clientSecret = config.OAUTH_SECRET;
 var baseSite = config.basepath;
@@ -33,7 +30,7 @@ var LoginView = function(rootWindow) {
     height: 640,
   });
 
-  this.oauthWindow.on('document-end', function(accessToken) {
+  this.oauthWindow.on('document-end', function() {
     // gitter login page finished loading visible bits
     self.oauthWindow.show();
     self.oauthWindow.focus();

@@ -3,15 +3,15 @@
     <title>Gitter Login</title>
     <script type="text/javascript">
       var gui = window.require('nw.gui');
-      var win = gui.Window.get();
+      var oauthWindow = gui.Window.get();
       var code = window.location.search.match(/code=(\w+)$/);
       var error = window.location.search.match(/error=(\w+)$/);
 
       if (code) {
-        win.emit('codeReceived', code[1]);
+        oauthWindow.emit('codeReceived', code[1]);
       } else if (error) {
         console.log(error);
-        win.emit('error', new Error(error[1]));
+        oauthWindow.emit('error', new Error(error[1]));
       }
     </script>
   </head>
