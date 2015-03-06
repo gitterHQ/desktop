@@ -1,6 +1,7 @@
 'use strict';
 
 var gui = window.require('nw.gui');
+var log = require('loglevel');
 var Gitter = window.require('gitter-realtime-client');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
@@ -31,12 +32,15 @@ TrayMenu.prototype.unsetRooms = function () {
 };
 
 TrayMenu.prototype.setRooms = function (rooms) {
+  log.debug('TrayMenu: Rooms collection set');
+
+  // TODO: the existing listeners need to be cleared properly...
   this.rooms = rooms;
   this.favourites = Gitter.filteredRooms.favourites(rooms);
   this.recents = Gitter.filteredRooms.recents(rooms);
   this.unreads = Gitter.filteredRooms.unreads(rooms);
 
-  this.rooms.on('reset', function (room) {
+  this.rooms.on('reset', function () {
     this.build();
   }.bind(this));
 
@@ -59,6 +63,7 @@ TrayMenu.prototype.addDefaults = function () {
 };
 
 TrayMenu.prototype.build = function () {
+  log.debug('Rebuilding tray menu');
   this.clear();
 
   if (this.unreads.length > 0) {
@@ -76,7 +81,7 @@ TrayMenu.prototype.build = function () {
   events.emit('traymenu:updated');
 };
 
-TrayMenu.prototype.addSection = function (spec, index, arr) {
+TrayMenu.prototype.addSection = function (spec) {
   if (spec.collection.length <= 0) return;
 
   var appendRoom = function (room) {
