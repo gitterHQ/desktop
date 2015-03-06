@@ -13,8 +13,8 @@ try {
 
 }
 
-var key = (process.env.OAUTH_KEY || typeof OAUTH !== 'undefined' && OAUTH.key).trim();
-var secret = (process.env.OAUTH_SECRET || typeof OAUTH !== 'undefined' && OAUTH.secret).trim();
+var key = (process.env.OAUTH_KEY || typeof OAUTH !== 'undefined' && OAUTH.key || '').trim();
+var secret = (process.env.OAUTH_SECRET || typeof OAUTH !== 'undefined' && OAUTH.secret || '').trim();
 
 if (!key || !secret) {
   /*var win = */gui.Window.get(window.open('../welcome.html')); // WC: instructions for developers
