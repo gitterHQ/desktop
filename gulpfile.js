@@ -3,6 +3,8 @@
 
 var CONFIG;
 
+var gutil = require('gulp-util');
+
 try {
   CONFIG = require('./keys.json');
 } catch (e) {
@@ -12,7 +14,6 @@ try {
 var SUPPORTED_PLATFORMS = ['win32', 'linux32', 'linux64', 'osx64'];
 
 var gulp = require('gulp');
-var gutil = require('gulp-util');
 var shell = require('gulp-shell');
 var util = require('util');
 var os = require('os');
