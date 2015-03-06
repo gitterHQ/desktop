@@ -22,7 +22,7 @@
   },
   "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
   "dependencies": {
-    "gitter-realtime-client": "^0.1.9",
+    "gitter-realtime-client": "^0.1.10",
     "jfs": "^0.2.4",
     "loglevel": "^1.2.0",
     "mac-sounds": "^0.1.1",
