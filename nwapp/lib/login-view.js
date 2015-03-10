@@ -24,6 +24,7 @@ var LoginView = function(rootWindow) {
     // hide page loading
     show: false,
     toolbar: false,
+    icon: 'img/logo.png',
 
     // just big enough to show github login without scrollbars
     width: 1024,
