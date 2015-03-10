@@ -38,18 +38,19 @@ For the official downloads, please visit [https://gitter.im/apps](https://gitter
 
 Changelog
 ---------
+* 2015-03-10 `2.3.1` - fix for hard websocket crash
 * 2015-03-06 `2.3.0` - stabilty fixes and first open source release
 * 2015-02-20 `2.2.5` - realtime connection stabilty fixes
 * 2015-02-12 `2.2.4` - fixes issues with tray and badge disconnecting
-* 2015-02-09 `2.2.3` — fix Ubuntu libudev symlinking
-* 2015-02-04 `2.2.2` — oauth fixes
-* 2015-02-04 `2.2.1` — oauth fixes
-* 2015-02-04 `2.2.0` — fixed autoupdater trashing the uninstaller
-* 2015-02-03 `2.1.3` — autoupdate caching fixes
-* 2015-02-03 `2.1.2` — autoupdate tweaks
-* 2015-02-03 `2.1.1` — file menu tweaks
-* 2015-02-02 `2.1.0` — added auto update
-* 2015-01-22 `2.0.4` — alpha release for windows
+* 2015-02-09 `2.2.3` - fix Ubuntu libudev symlinking
+* 2015-02-04 `2.2.2` - oauth fixes
+* 2015-02-04 `2.2.1` - oauth fixes
+* 2015-02-04 `2.2.0` - fixed autoupdater trashing the uninstaller
+* 2015-02-03 `2.1.3` - autoupdate caching fixes
+* 2015-02-03 `2.1.2` - autoupdate tweaks
+* 2015-02-03 `2.1.1` - file menu tweaks
+* 2015-02-02 `2.1.0` - added auto update
+* 2015-01-22 `2.0.4` - alpha release for windows
 
 License
 -------
