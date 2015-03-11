@@ -16,3 +16,4 @@ certificates/*
 artefacts/*
 snapshot_source*.js
 npm-debug.log
+env.sh
