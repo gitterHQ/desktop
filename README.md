@@ -5,8 +5,13 @@ Gitter Desktop Client
 
 This is the desktop client for Linux, Windows and Mac OSX.
 
-How to run
-----------
+Latest Builds
+-------------
+
+For the official downloads, please visit [https://gitter.im/apps](https://gitter.im/apps).
+
+Running The Development Version
+-------------------------------
 
 The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the only prerequisite is [node.js](http://nodejs.org/download) for your platfrom.
 
@@ -15,7 +20,7 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the onl
 3. generate your own [app oAuth credentials](https://developer.gitter.im/apps) where the redirect url is `app://gitter/oauth.html`
 4. start the app with your credentials: `OAUTH_KEY=yourkey OAUTH_SECRET=yoursecret npm start`
 
-Tray icon on Ubuntu
+Tray Icon on Ubuntu
 -------------------
 To see the Gitter tray icon run:
 
@@ -31,10 +36,6 @@ Enabling Logging on Windows
 ---------------------------
 To enable logging on Windows, please [follow this guide](https://gist.github.com/trevorah/bfeb4ad69e4633dc76c5).
 
-Downloads
----------
-
-For the official downloads, please visit [https://gitter.im/apps](https://gitter.im/apps).
 
 Changelog
 ---------
