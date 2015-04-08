@@ -14,7 +14,6 @@
   },
   "scripts": {
     "postinstall": "(cd nwapp && npm install)",
-    "test": "echo \"Error: no tests specified\" && exit 1",
     "build": "gulp build",
     "start": "nodewebkit nwapp"
   },
