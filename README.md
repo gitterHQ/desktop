@@ -22,6 +22,7 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the onl
 4. start the app with your credentials:
   * linux/osx: `OAUTH_KEY=yourkey OAUTH_SECRET=yoursecret npm start`
   * windows cmd: `set OAUTH_KEY=yourkey && set OAUTH_SECRET=yoursecret && npm start`
+  * alternatively, put your keys and secrets in `nwapp/oauth.json`
 
 Tray Icon on Ubuntu
 -------------------
