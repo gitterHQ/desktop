@@ -5,7 +5,6 @@ log.setLevel('debug');
 
 // @CONST
 var CLIENT = require('./utils/client-type');
-var CONFIG = require('./utils/config');
 
 var gui = require('nw.gui');
 var pkg = require('./package.json');
@@ -103,10 +102,6 @@ function initGUI() {
 function initApp() {
 
   var token = settings.token;
-
-  if (!CONFIG.OAUTH_KEY || !CONFIG.OAUTH_SECRET) {
-    return;
-  }
 
   // user not logged in
   if (!token) {
