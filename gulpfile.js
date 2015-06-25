@@ -1,27 +1,17 @@
 /* jshint node: true */
 'use strict';
 
-var CONFIG;
-
 var gutil = require('gulp-util');
-
-try {
-  CONFIG = require('./keys.json');
-} catch (e) {
-  gutil.log(gutil.colors.red('You cannot manipulate snapshots or certificates since keys.json cannot be found.'));
-}
 
 var SUPPORTED_PLATFORMS = ['win32', 'linux32', 'linux64', 'osx64'];
 
 var gulp = require('gulp');
 var shell = require('gulp-shell');
-var util = require('util');
 var os = require('os');
 var fs = require('fs');
 var s3 = require('s3');
 var path = require('path');
 var rimraf = require('rimraf');
-var semver = require('semver');
 var manifest = require('./package.json');
 var template = require('lodash.template');
 var Builder = require('node-webkit-builder');
@@ -29,9 +19,7 @@ var appmanifest = require('./nwapp/package.json');
 
 var LATEST_HTML_TEMPLATE = template(fs.readFileSync('./latest-template.html').toString());
 
-var CURRENT_ARCH = process.arch.slice(1);
 var CURRENT_OS = (os.platform().match(/darwin/) ? 'osx' : os.platform());
-var CURRENT_PLATFORM = CURRENT_OS + CURRENT_ARCH;
 
 var YEAR = new Date().getFullYear();
 var CACHE_DIR = './cache';
@@ -45,11 +33,6 @@ var CERTIFICATES_FORMAT = {
   'win': 'troupe-cert.pfx',
   'osx': 'DeveloperID.p12'
 };
-
-var SNAPSHOT_DIR = path.join(SOURCE_DIR, 'snapshots');
-var SNAPSHOT_SOURCE_TEMPLATE = template('snapshot_source_<%= platform %>.js');
-var SNAPSHOT_BIN_TEMPLATE = template('snapshot_<%= platform %>.bin');
-var SNAPSHOT_TARGET = path.join(SNAPSHOT_DIR, SNAPSHOT_BIN_TEMPLATE({ platform: CURRENT_PLATFORM }));
 
 var ARTEFACTS_DIR = './artefacts';
 var LINUX_ARTEFACT_TEMPLATE = template('<%= name %>_<%= version %>_<%= arch %>.deb');
@@ -69,7 +52,6 @@ var ARTEFACTS_URL = Object.keys(ARTEFACTS).reduce(function (fold, item) {
 var S3_CONSTS = {
   buckets: {
     certificates: 'troupe-certs',
-    snapshots: 'nwsnapshots',
     updates: 'update.gitter.im'
   },
   handleError: function (err) {
@@ -118,38 +100,6 @@ function pushS3(params, done) {
 
 gulp.task('clean', [OUTPUT_DIR, ARTEFACTS_DIR, CACHE_DIR].map(function (dir) { return 'clean:' + path.basename(dir); }));
 
-/* snapshot:source:{{ platform }} */
-SUPPORTED_PLATFORMS.forEach(function (platform) {
-
-  var RESOURCE = 'snapshot';
-  var file = SNAPSHOT_BIN_TEMPLATE({ platform: platform });
-
-  gulp.task(namespace(RESOURCE, 'source', platform), function (done) {
-    var OAUTH = CONFIG[platform];
-    fs.writeFile(SNAPSHOT_SOURCE_TEMPLATE({ platform: platform }), template("var OAUTH = { key: '<%= key %>', secret: '<%= secret %>' };")({ key: OAUTH.key, secret: OAUTH.secret }), done);
-  });
-
-  /* snapshot:push:{{ platform }} */
-  gulp.task(namespace(RESOURCE, 'fetch', platform), fetchS3.bind(null, {
-    localFile: path.join(SNAPSHOT_DIR, file),
-    s3Params: {
-      Bucket: S3_CONSTS.buckets.snapshots,
-      Key: file,
-    },
-  }));
-
-  /* snapshot:push:{{ platform }} */
-  gulp.task(namespace(RESOURCE, 'push', platform), pushS3.bind(null, {
-    localFile: path.join(SNAPSHOT_DIR, file),
-    s3Params: {
-      Bucket: S3_CONSTS.buckets.snapshots,
-      Key: file,
-      CacheControl: 'public, max-age=0, no-cache',
-      ACL: 'private'
-    }
-  }));
-});
-
 /* certificate:fetch:{{ OS }} */
 Object.keys(CERTIFICATES_FORMAT).forEach(function (OS) {
   var file = CERTIFICATES_FORMAT[OS];
@@ -162,25 +112,10 @@ Object.keys(CERTIFICATES_FORMAT).forEach(function (OS) {
   }));
 });
 
-/* IMPORTANT: this is how you actually generate a snapshot */
-gulp.task('snapshot', ['snapshot:source'], shell.task([
-  template(path.join(CACHE_DIR, manifest.nwversion, CURRENT_PLATFORM, 'nwsnapshot') +  ' --extra_code <%= source %> <%= target %>')({ source: SNAPSHOT_SOURCE_TEMPLATE({ platform: CURRENT_PLATFORM }), target: SNAPSHOT_TARGET })
-]));
-
-/* generates snapshot source for current platform */
-gulp.task('snapshot:source', ['snapshot:source:' + CURRENT_PLATFORM]);
-
-/* fetches the current os snapshot */
-gulp.task('snapshot:fetch', ['snapshot:fetch:' + CURRENT_PLATFORM]);
-
 /* fetches the current os certificate */
 gulp.task('cert:fetch', ['cert:fetch:' + CURRENT_OS]);
 
-
-/* pushes the current os snapshot */
-gulp.task('snapshot:push', ['snapshot:push:' + CURRENT_PLATFORM]);
-
-gulp.task('build', ['clean:opt', 'clean:artefacts'].concat(SUPPORTED_PLATFORMS.map(function (platform) { return 'snapshot:fetch:' + platform; })), function (done) {
+gulp.task('build', ['clean:opt', 'clean:artefacts'], function (done) {
   fs.mkdirSync(ARTEFACTS_DIR);
   var builder = new Builder({
     buildDir:   OUTPUT_DIR,

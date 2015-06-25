@@ -1,7 +1,7 @@
 'use strict';
 
 var log = require('loglevel');
-var oauthJson = require('../../oauth.json');
+var oauthJson = require('../oauth.json');
 var os = require('../utils/client-type');
 var OAuth2 = require('oauth').OAuth2;
 var EventEmitter = require('events').EventEmitter;
