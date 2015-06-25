@@ -38,8 +38,6 @@ var loginView; // log in form
 // initialisation as a IIFE
 (function () {
   log.info('Gitter' + pkg.version);
-  gui.App.addOriginAccessWhitelistEntry(CONFIG.basepath, 'app', 'gitter', true); // whitelists app:// protocol used for the oAuth callback
-  // gui.App.setCrashDumpDir(gui.App.dataPath);
 
   if (autoUpdate.isInProgress()) {
     log.info('Update in progress...');
@@ -176,10 +174,11 @@ function initApp() {
   showLoggedInWindow();
 }
 
-// displays authentication window
 function showAuth() {
-  log.trace('showAuth()');
   if (loginView) return;
+
+  // whitelists app:// protocol used for the oAuth callback
+  gui.App.addOriginAccessWhitelistEntry('https://gitter.im/', 'app', 'gitter', true);
 
   loginView = new LoginView(gui.Window);
 
