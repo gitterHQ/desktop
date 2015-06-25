@@ -11,9 +11,7 @@ cache
 output
 opt
 nwapp/oauth.json
-nwapp/snapshots/*.bin
 certificates/*
 artefacts/*
-snapshot_source*.js
 npm-debug.log
 env.sh
