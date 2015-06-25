@@ -23,7 +23,5 @@ if (!key || !secret) {
 
 module.exports = {
   OAUTH_KEY:     key,
-  OAUTH_SECRET:  secret,
-  basepath:      'https://gitter.im/',
-  redirect_uri:  'app://gitter/oauth.html',
+  OAUTH_SECRET:  secret
 };

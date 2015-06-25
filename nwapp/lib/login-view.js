@@ -8,7 +8,7 @@ var util = require('util');
 
 var clientId = config.OAUTH_KEY;
 var clientSecret = config.OAUTH_SECRET;
-var baseSite = config.basepath;
+var baseSite = 'https://gitter.im/';
 var authorizePath = 'login/oauth/authorize';
 var accessTokenPath = 'login/oauth/token';
 var redirectUri = 'app://gitter/oauth.html';
