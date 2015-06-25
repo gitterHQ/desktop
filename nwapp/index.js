@@ -47,23 +47,9 @@ var loginView; // log in form
   }
 
   initGUI(); // intialises menu and tray, setting up event listeners for both
+  initApp();
 
-  if (changedEnvironment()) { // TODO: maybe move this out, it will only be true in dev mode
-    flushCookies()
-      .then(function () {
-        settings.token = null;
-        settings.lastrun = CONFIG.OAUTH_KEY; // FIXME
-        initApp();
-      });
-  } else {
-    initApp();
-  }
 })();
-
-// returns a boolean representing whether we are still on the
-function changedEnvironment() {
-  return settings.lastrun !== CONFIG.OAUTH_KEY;
-}
 
 // reopen window when they are all closed
 function reopen() {
