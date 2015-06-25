@@ -1,13 +1,14 @@
 'use strict';
 
 var log = require('loglevel');
-var config = require('../utils/config');
+var oauthJson = require('../../oauth.json');
+var os = require('../utils/client-type');
 var OAuth2 = require('oauth').OAuth2;
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 
-var clientId = config.OAUTH_KEY;
-var clientSecret = config.OAUTH_SECRET;
+var clientId = process.env.OAUTH_KEY || oauthJson[os].key || '';
+var clientSecret = process.env.OAUTH_SECRET || oauthJson[os].secret || '';
 var baseSite = 'https://gitter.im/';
 var authorizePath = 'login/oauth/authorize';
 var accessTokenPath = 'login/oauth/token';
@@ -16,6 +17,9 @@ var redirectUri = 'app://gitter/oauth.html';
 
 var LoginView = function(rootWindow) {
   var self = this;
+
+  if (!clientId) throw new Error('You must provide an oauth key. Keys can be obtained from https://developer.gitter.im');
+
   var auth = new OAuth2(clientId, clientSecret, baseSite, authorizePath, accessTokenPath);
   var authUrl = auth.getAuthorizeUrl({ redirect_uri: redirectUri, response_type: 'code' });
 

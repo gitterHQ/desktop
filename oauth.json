@@ -1,0 +1,14 @@
+{
+  "osx": {
+    "key": "",
+    "secret": ""
+  },
+  "win": {
+    "key": "",
+    "secret": ""
+  },
+  "linux": {
+    "key": "",
+    "secret": ""
+  }
+}
