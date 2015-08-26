@@ -14,7 +14,7 @@ For the official downloads, please visit [https://gitter.im/apps](https://gitter
 Running The Development Version
 -------------------------------
 
-The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the only prerequisite is [node.js](http://nodejs.org/download) for your platfrom.
+The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the only prerequisite is [node.js](http://nodejs.org/download) for your platfrom and npm 3+.
 
 1. clone this repo: `git clone git@github.com:gitterHQ/desktop.git && cd desktop`
 2. install all dependencies: `npm install`
