@@ -1,7 +1,7 @@
 {
   "name": "Gitter",
   "description": "Where developers come to talk.",
-  "version": "2.3.3-alpha.2",
+  "version": "2.3.3",
   "main": "app://gitter/index.html",
   "window": {
     "icon": "./img/logo.png",
@@ -34,7 +34,7 @@
   "manifestUrl": "https://update.gitter.im/desktop/package.json",
   "packages": {
     "win": {
-      "url": "https://update.gitter.im/win/Gitter-2.3.2.zip"
+      "url": "https://update.gitter.im/win/Gitter-2.3.3.zip"
     },
     "mac": {
       "url": "https://update.gitter.im/osx/osx.zip"

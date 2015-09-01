@@ -1,3 +1,9 @@
+# `2.3.3` - 2015-09-01
+fix for windows startup sometimes showing node-webkit ascii art
+
+# `2.3.2` - 2015-04-08
+updated realtime client
+
 # `2.3.1` - 2015-03-10
 fix for hard websocket crash
 
