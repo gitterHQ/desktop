@@ -38,7 +38,19 @@ More info [here](http://ubuntuforums.org/showthread.php?t=2217458).
 
 Enabling Logging on Windows
 ---------------------------
-To enable logging on Windows, please [follow this guide](https://gist.github.com/trevorah/bfeb4ad69e4633dc76c5).
+1. Install [Sawbuck](https://code.google.com/p/sawbuck/). This tool will capture logs for all chrome-based applications.
+2. Add "Content Shell" to your list of Providers in Sawbuck by adding these registry entries to your machine (NOTE the optional Wow6432Node key for x64 machines):
+  1. Find:  `HKLM\SOFTWARE\[Wow6432Node\]Google\Sawbuck\Providers`
+  2. Add a subkey with the name `{6A3E50A4-7E15-4099-8413-EC94D8C2A4B6}`
+  3. Add these values:
+    * Key: `(Default)`, Type: `REG_SZ`, Value: `Content Shell`
+    * Key: `default_flags`, Type: `REG_DWORD`, Value: `00000001`
+    * Key: `default_level`, Type: `REG_DWORD`, Value `00000004`
+  
+  Alternatively, use [this .reg file](http://cl.ly/1K0R2o1r1K0Z/download/enable-gitter-logging.reg) to do the above for you (in x86) (courtesy of @mydigitalself).
+3. Start Sawbuck and go to `Log -> Configure Providers` and change Content Shell's Log Level to `Verbose`.
+4. Start capturing logs by going to `Log -> Capture`.
+5. Start up your Gitter app and watch those logs!
 
 Releasing the app (win32 and linux32/64)
 ----------------------------------------
