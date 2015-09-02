@@ -57,7 +57,7 @@ var LoginView = function(rootWindow) {
 
     auth.getOAuthAccessToken(code, { redirect_uri: redirectUri, grant_type: 'authorization_code' }, function(err, accessToken) {
       if (err) {
-        log('oauth error: ' + JSON.stringify(err));
+        log.error('oauth error: ' + JSON.stringify(err));
         self.destroy();
         return;
       }
