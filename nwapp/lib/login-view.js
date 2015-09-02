@@ -1,7 +1,13 @@
 'use strict';
 
 var log = require('loglevel');
-var oauthJson = require('../oauth.json');
+var oauthJson = { osx: {}, win: {}, linux: {} };
+try {
+  oauthJson = require('../oauth.json');
+} catch (e) {
+  log.warn('nwapp/oauth.json not found. Hopefully OAUTH_KEY and OAUTH_SECRET are set...');
+}
+
 var os = require('../utils/client-type');
 var OAuth2 = require('oauth').OAuth2;
 var EventEmitter = require('events').EventEmitter;
