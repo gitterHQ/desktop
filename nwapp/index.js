@@ -34,17 +34,22 @@ var mainWindow; // this is the chat window (logged in)
 var mainWindowFocused; // Focus tracker. NWK doesn't have a way to query if the window is in focus
 var loginView; // log in form
 
-// initialisation as a IIFE
 (function () {
-  log.info('Gitter' + pkg.version);
+  log.info('version:', pkg.version);
 
-  if (autoUpdate.isInProgress()) {
-    log.info('Update in progress...');
-    return autoUpdate.finishUpdate();
+  if (gui.App.argv.length) {
+    log.info('I am a new app in a temp dir');
+    log.info('I will overwrite the old app with myself and then restart it');
+
+    var oldAppLocation = gui.App.argv[0];
+    var executable = gui.App.argv[1];
+
+    return autoUpdate.overwriteOldApp(oldAppLocation, executable);
   }
 
   initGUI(); // intialises menu and tray, setting up event listeners for both
   initApp();
+  autoUpdate.poll();
 
 })();
 
@@ -353,6 +358,3 @@ function flushCookies() {
       });
   });
 }
-
-autoUpdate.pollForUpdates();
-setInterval(autoUpdate.pollForUpdates, 30*60*1000);

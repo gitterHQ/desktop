@@ -22,6 +22,7 @@
   },
   "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
   "dependencies": {
+    "extract-zip": "^1.0.3",
     "gitter-realtime-client": "^0.1.13",
     "jfs": "^0.2.4",
     "loglevel": "^1.2.0",
@@ -29,7 +30,10 @@
     "node-webkit-updater": "^0.2.3",
     "node-webkit-winstate": "^1.1.0",
     "oauth": "^0.9.12",
-    "open": "0.0.5"
+    "open": "0.0.5",
+    "request": "^2.61.0",
+    "rimraf": "^2.4.3",
+    "temp": "^0.8.3"
   },
   "manifestUrl": "https://update.gitter.im/desktop/package.json",
   "packages": {
