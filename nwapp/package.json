@@ -44,7 +44,7 @@
       "url": "https://update.gitter.im/osx/osx.zip"
     }
   },
-  "single-instance": false,
+  "single-instance": true,
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
