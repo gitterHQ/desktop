@@ -99,7 +99,7 @@ function notifyWinOsxUser(version, newAppExecutable) {
 
   notify();
 
-  setInterval(notify, 60 * 1000);
+  setInterval(notify, 5 * 60 * 1000);
 }
 
 
