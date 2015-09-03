@@ -1,6 +1,5 @@
 'use strict';
 
-var log = require('loglevel');
 var settings = require('./settings');
 
 var gui = window.require('nw.gui');
@@ -17,7 +16,6 @@ function getNotificationImageForUri(uri) {
 }
 
 function playNotificationSound() {
-  log.trace('playNotificationSound()');
   var audio = win.window.document.createElement('audio');
   var sound = SOUNDS_ITEMS[settings.notificationSound];
 
@@ -31,7 +29,6 @@ function playNotificationSound() {
 }
 
 module.exports = function (spec) {
-  log.trace('notify()');
   if (!settings.showNotifications) return;
   playNotificationSound();
 

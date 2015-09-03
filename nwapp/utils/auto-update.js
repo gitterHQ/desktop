@@ -65,17 +65,24 @@ function getUpdate(manifest, cb) {
 }
 
 function notifyLinuxUser(version) {
-  setInterval(function() {
+
+  function notify() {
     notifier({
       title: 'Gitter ' + version + ' Available',
       message: 'Head over to gitter.im/apps to update.'
     });
-    // every 30 mins, otherwise it gets annoying
-  }, 30 * 60 * 1000);
+  }
+
+  notify();
+
+  // every 30 mins, as it requires the user to manually go to gitter.im/apps
+  // so it could get annoying
+  setInterval(notify, 30 * 60 * 1000);
 }
 
 function notifyWinOsxUser(version, newAppExecutable) {
-  setInterval(function() {
+
+  function notify() {
     notifier({
       title: 'Gitter ' + version + ' Available',
       message: 'Click to restart and apply update.',
@@ -88,7 +95,11 @@ function notifyWinOsxUser(version, newAppExecutable) {
         gui.App.quit();
       }
     });
-  }, 60 * 1000);
+  }
+
+  notify();
+
+  setInterval(notify, 60 * 1000);
 }
 
 
