@@ -59,21 +59,26 @@ Releasing the app (win32 and linux32/64)
   2. On osx/linux, run `gulp cert:fetch:win`
   3. On windows, mount this project and run `windows/build.bat VERSION` (e.g `windows/build.bat 1.2.3`)
   4. On osx/linux, run `gulp autoupdate:zip:win`
+  4. On osx/linux, run `gulp autoupdate:zip:osx`
   5. On osx/linux, create the redirect pages with `gulp redirect:source`
 2. **Check that all the binaries work**. You should have:
-  * GitterSetup-2.2.5.exe
-  * gitter_2.2.5_amd64.deb
-  * gitter_2.2.5_i386.deb
+  * GitterSetup-X.X.X.exe
+  * Gitter-X.X.X.dmg
+  * gitter_X.X.X_amd64.deb
+  * gitter_X.X.X_i386.deb
   * latest_linux32.html
   * latest_linux64.html
   * latest_win.html
   * win32.zip
+  * osx.zip
 3. Publish the release (all uploads will throw a formatError!)
   1. on osx/linux, publish the artefacts by running:
     * `gulp artefacts:push:win`
+    * `gulp artefacts:push:osx`
     * `gulp artefacts:push:linux32`
     * `gulp artefacts:push:linux64`
     * `gulp autoupdate:push:win`
+    * `gulp autoupdate:push:osx`
   2. on osx/linux, publish the redirects by running:
     * `gulp redirect:push:win`
     * `gulp redirect:push:linux32`
