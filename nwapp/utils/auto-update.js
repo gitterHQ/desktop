@@ -2,7 +2,7 @@
 
 var log = require('loglevel');
 var notifier = require('./notifier');
-var pkg = require('../package.json');
+var packageJson = require('../package.json');
 var gui = window.require('nw.gui');
 var os = require('./client-type');
 var Updater = require('node-webkit-updater');
@@ -12,7 +12,19 @@ var extract = require('extract-zip');
 var rimraf = require('rimraf');
 var path = require('path');
 
-var updater = new Updater(pkg);
+var MANIFEST_URLS = {
+  win: 'https://update.gitter.im/win/package.json',
+  osx: 'https://update.gitter.im/osx/package.json',
+  linux: 'https://update.gitter.im/linux/package.json'
+};
+
+var currentManifest = {
+  name: packageJson.name,
+  version: packageJson.version,
+  manifestUrl: MANIFEST_URLS[os]
+};
+
+var updater = new Updater(currentManifest);
 
 function download(url, cb) {
   var tempFileStream = temp.createWriteStream('gitter-update-zip');
@@ -106,6 +118,7 @@ function notifyWinOsxUser(version, newAppExecutable) {
 function poll() {
 
   function update() {
+    log.info('checking', currentManifest.manifestUrl, 'for app updates');
     updater.checkNewVersion(function (err, newVersionExists, newManifest) {
       if (err) {
         log.error('request for app update manifest failed', err);

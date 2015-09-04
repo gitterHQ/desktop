@@ -35,10 +35,9 @@
     "rimraf": "^2.4.3",
     "temp": "^0.8.3"
   },
-  "manifestUrl": "https://update.gitter.im/desktop/package.json",
   "packages": {
     "win": {
-      "url": "https://update.gitter.im/win/Gitter-2.3.3.zip"
+      "url": "https://update.gitter.im/win/win32.zip"
     },
     "mac": {
       "url": "https://update.gitter.im/osx/osx.zip"
