@@ -1,3 +1,6 @@
+# `2.4.0` - 2015-09-04
+fixes for the autoupdate process
+
 # `2.3.3` - 2015-09-01
 fix for windows startup sometimes showing node-webkit ascii art
 
