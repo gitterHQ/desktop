@@ -48,9 +48,21 @@ Enabling Logging on Windows
     * Key: `default_level`, Type: `REG_DWORD`, Value `00000004`
   
   Alternatively, use [this .reg file](http://cl.ly/1K0R2o1r1K0Z/download/enable-gitter-logging.reg) to do the above for you (in x86) (courtesy of @mydigitalself).
-3. Start Sawbuck and go to `Log -> Configure Providers` and change Content Shell's Log Level to `Verbose`.
+3. Start Sawbuck and go to `Log -> Configure Providers` and change Content Shell's Log Level to `Verbose`. There are additional privacy-related changes that you may wish to make; see [Important Privacy and Security Notice](#important-privacy-and-security-notice), below.
 4. Start capturing logs by going to `Log -> Capture`.
 5. Start up your Gitter app and watch those logs!
+
+#### Important Privacy and Security Notice ####
+
+Please be advised that, by default, Sawbuck captures a great deal of information that could be considered sensitive or private.
+
+Most importantly, Sawback captures logging data from **all** running Chrome instances, which means that if you have the Chrome browser running, in addition to the Gitter Desktop client, and you begin capturing with Sawbuck, detailed information about your Chrome browser session will be included in the Sawbuck log contents. Such information may include URLs you visited, search queries you executed, and the like.
+
+To minimize the risk of including sensitive information in a publicly-posted logging session, you are advised to change the `Configure Providers` options such that the `Log Level` value is set to `None` for every Provider *except* for `Content Shell`.
+
+Secondly, the path to your Windows profile is included in every entry that contains `CONSOLE` in the `File` column. If you wish for your Windows username/profile path to remain private, you may wish to sanitize the log output (e.g., find/replace your username with "anonymous" or similar) prior to posting the output publicly.
+
+Finally, Sawbuck captures the full contents of ongoing **public** chat conversations in the Gitter Desktop client (it does not capture the contents of private conversations, at least with the recommended Provider configuration, explained above). Given that public chats are exactly that &mdash; public &mdash; this may not be an area of concern for most. However, there may be cases in which you do not wish for two separate identities to be associated with one another (e.g., if you capture the log under a work account but post it under a personal account). In such cases, be mindful of this fact when posting Sawbuck log content publicly.
 
 Releasing the app (win32 and linux32/64)
 ----------------------------------------
