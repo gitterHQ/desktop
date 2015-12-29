@@ -48,9 +48,15 @@ Enabling Logging on Windows
     * Key: `default_level`, Type: `REG_DWORD`, Value `00000004`
   
   Alternatively, use [this .reg file](http://cl.ly/1K0R2o1r1K0Z/download/enable-gitter-logging.reg) to do the above for you (in x86) (courtesy of @mydigitalself).
-3. Start Sawbuck and go to `Log -> Configure Providers` and change Content Shell's Log Level to `Verbose`.
+3. Start Sawbuck and go to `Log -> Configure Providers` and change Content Shell's Log Level to `Verbose`. There are additional privacy-related changes that you may wish to make; see [Important Privacy and Security Notice](#important-privacy-and-security-notice), below.
 4. Start capturing logs by going to `Log -> Capture`.
 5. Start up your Gitter app and watch those logs!
+
+#### Important Privacy and Security Notice ####
+
+Sawback captures logging data from **all** running Chrome instances (not just the Gitter Desktop client), so its logs may include URLs you visited, search queries you executed, and the like.
+
+To minimize the risk of including sensitive information in a publicly-posted logging session, you are advised to change the `Configure Providers` options such that the `Log Level` value is set to `None` for every Provider *except* for `Content Shell`. *Always* review logs for sensitive information and sanitize as appropriate before posting them publicly.
 
 Releasing the app (win32 and linux32/64)
 ----------------------------------------
