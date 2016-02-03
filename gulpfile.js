@@ -14,7 +14,7 @@ var path = require('path');
 var rimraf = require('rimraf');
 var manifest = require('./package.json');
 var template = require('lodash.template');
-var Builder = require('node-webkit-builder');
+var Builder = require('nw-builder');
 var appmanifest = require('./nwapp/package.json');
 
 var LATEST_HTML_TEMPLATE = template(fs.readFileSync('./latest-template.html').toString());
