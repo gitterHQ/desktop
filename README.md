@@ -57,7 +57,10 @@ To minimize the risk of including sensitive information in a publicly-posted log
 
 ## Releasing the app (win32 and linux32/64)
 
-On osx/linux, you will need to run `brew cask install java xquartz` then `brew install wine`.
+On osx/linux, run the following commands
+ - `brew cask install java xquartz` then `brew install wine`
+ - `brew install gnu-tar` then `sudo gem install fpm`
+ - If on osx(because of a bug with Yosemite), Open `/Library/Ruby/Gems/2.0.0/gems/ffi-1.9.10/lib/ffi/library.rb` and do the fix proposed here: https://github.com/ffi/ffi/issues/461#issuecomment-149253757
 
 1. Build all app artefacts
   1. On osx/linux, run `gulp build:linux`
