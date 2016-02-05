@@ -9,6 +9,7 @@ var CLIENT = require('./utils/client-type');
 var gui = require('nw.gui');
 var pkg = require('./package.json');
 var Gitter = require('gitter-realtime-client');
+var os = require('os');
 
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
@@ -31,7 +32,7 @@ process.on('uncaughtException', function (err) {
 
 var win;
 var mainWindow; // this is the chat window (logged in)
-var mainWindowFocused; // Focus tracker. NWK doesn't have a way to query if the window is in focus
+var mainWindowFocused = false; // Focus tracker. NWK doesn't have a way to query if the window is in focus
 var loginView; // log in form
 
 (function () {
@@ -256,7 +257,13 @@ function showLoggedInWindow(exec) {
   });
 
   mainWindow.on('loaded', function () {
-    mainWindowFocused = true;
+    // When a mac app starts up, it doesn't have focus
+    // When a Windows app starts up, it has focus
+    // TODO: Check behaviour on linux
+    if(os.type() !== 'Darwin') {
+      mainWindowFocused = true;
+    }
+
     if (exec) {
       var iFrame = mainWindow.window.document.getElementById('mainframe');
       iFrame.onload = function () {
