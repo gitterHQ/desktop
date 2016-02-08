@@ -22,8 +22,9 @@
   },
   "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
   "dependencies": {
+    "bluebird": "^3.2.1",
     "extract-zip": "^1.0.3",
-    "gitter-realtime-client": "^0.1.13",
+    "gitter-realtime-client": "^1.0.0",
     "jfs": "^0.2.4",
     "loglevel": "^1.2.0",
     "node-notifier": "^4.4.0",
@@ -31,7 +32,7 @@
     "node-webkit-winstate": "^1.1.0",
     "oauth": "^0.9.12",
     "open": "0.0.5",
-    "request": "^2.61.0",
+    "request": "^2.69.0",
     "rimraf": "^2.4.3",
     "temp": "^0.8.3"
   },

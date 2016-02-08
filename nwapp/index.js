@@ -260,7 +260,7 @@ function showLoggedInWindow(exec) {
     // When a mac app starts up, it doesn't have focus
     // When a Windows app starts up, it has focus
     // TODO: Check behaviour on linux
-    if(os.type() !== 'Darwin') {
+    if(CLIENT !== 'osx') {
       mainWindowFocused = true;
     }
 
