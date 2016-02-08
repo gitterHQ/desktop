@@ -1,7 +1,7 @@
 {
   "name": "Gitter",
   "description": "Where developers come to talk.",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "main": "app://gitter/index.html",
   "window": {
     "icon": "./img/logo.png",
