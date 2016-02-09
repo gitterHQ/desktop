@@ -25,7 +25,7 @@ OutputBaseFilename=GitterSetup
 Compression=lzma
 SolidCompression=yes
 ;SignTool=SignTool
-OutputDir=E:\artefacts
+OutputDir=..\artefacts
 ShowLanguageDialog=no
 PrivilegesRequired=lowest
 
@@ -38,8 +38,8 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Name: "userstartup"; Description: "{cm:StartAtLogin}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "E:\opt\Gitter\win32\Gitter.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\opt\Gitter\win32\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\opt\Gitter\win32\Gitter.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\opt\Gitter\win32\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

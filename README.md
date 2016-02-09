@@ -66,7 +66,7 @@ On osx/linux, run the following commands
   1. On osx/linux, run `gulp build:linux`
   2. On osx/linux, run `gulp cert:fetch:win`
      - You will need to setup [AWS CLI](https://aws.amazon.com/cli/) with your credentials `aws configure` (grab from AWS console IME)
-  3. On windows, mount this project and run `windows/build.bat VERSION` (e.g `windows/build.bat 1.2.3`)
+  3. On windows, run `node ./windows/build.js -p thepfxcertpasswordhere`. For more information, see the [windows build readme](https://github.com/gitterHQ/desktop/blob/master/windows/README.md)
   4. On osx/linux, run `gulp autoupdate:zip:win`
   4. On osx/linux, run `gulp autoupdate:zip:osx`
   5. On osx/linux, create the redirect pages with `gulp redirect:source`
