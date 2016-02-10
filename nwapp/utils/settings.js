@@ -15,6 +15,10 @@ var DEFAULT_SETTINGS = {
     value: true,
     validate: isBool
   },
+  launchOnStartup: {
+    value: true,
+    validate: isBool
+  },
   next: {
     value: false,
     validate: isBool

@@ -22,6 +22,7 @@
   },
   "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
   "dependencies": {
+    "auto-launch": "^1.1.1",
     "bluebird": "^3.2.1",
     "extract-zip": "^1.0.3",
     "gitter-realtime-client": "^1.0.0",

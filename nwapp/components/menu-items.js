@@ -25,11 +25,11 @@ module.exports = [
   {
     label: 'Launch on startup',
     type: 'checkbox',
-    checked: false,
+    checked: settings.launchOnStartup,
     click: function () {
-      // TODO: should toggle
+      settings.launchOnStartup = !settings.launchOnStartup;
     },
-    support: []
+    support: ['linux', 'win', 'osx']
   },
   {
     type: 'separator',

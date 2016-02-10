@@ -15,6 +15,7 @@ var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
 var events = require('./utils/custom-events');
 var autoUpdate = require('./utils/auto-update');
+var AutoLaunch = require('auto-launch');
 
 // components
 var MENU_ITEMS = require('./components/menu-items');
@@ -35,6 +36,10 @@ var mainWindow; // this is the chat window (logged in)
 var mainWindowFocused = false; // Focus tracker. NWK doesn't have a way to query if the window is in focus
 var loginView; // log in form
 
+var autoLauncher = new AutoLaunch({
+  name: 'Gitter'
+});
+
 (function () {
   log.info('version:', pkg.version);
 
@@ -51,6 +56,16 @@ var loginView; // log in form
   initGUI(); // intialises menu and tray, setting up event listeners for both
   initApp();
   autoUpdate.poll();
+
+  autoLauncher.isEnabled(function(enabled) {
+    if(enabled !== settings.launchOnStartup) {
+      autoLauncher[(settings.launchOnStartup ? 'enable' : 'disable')](function(err) {
+        if(err) {
+          throw err;
+        }
+      });
+    }
+  });
 
 })();
 
@@ -138,6 +153,15 @@ function initApp() {
   events.on('user:signedOut', function () {
     client.disconnect();
     client = null;
+  });
+
+  events.on('settings:change:launchOnStartup', function(newValue) {
+    console.log('settings:change:launchOnStartup', newValue);
+    autoLauncher[(newValue ? 'enable' : 'disable')](function(err) {
+      if(err) {
+        throw err;
+      }
+    });
   });
 
   // Realtime client to keep track of the user rooms.
