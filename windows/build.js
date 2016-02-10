@@ -61,7 +61,6 @@ Promise.any(statResults)
 
     // Run the commands in series
     commandList.reduce(function(seriesCommandChain, command) {
-      console.log(command);
       return seriesCommandChain.then(function(commandResult) {
         if(commandResult.command) {
           console.log('> ' + commandResult.command);
