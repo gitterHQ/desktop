@@ -4,6 +4,7 @@ var gui = window.require('nw.gui');
 var pkg = require('../package.json');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
+var quitApp = require('../utils/quit-app');
 
 var SOUNDS = require('../utils/sounds');
 
@@ -71,7 +72,7 @@ module.exports = [
   },
   {
     label: 'Exit',
-    click: gui.App.quit,
+    click: quitApp,
     support: ['linux', 'win']
   }
 ].map(function (item, index) {

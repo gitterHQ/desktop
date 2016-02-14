@@ -48,7 +48,6 @@ Promise.any(statResults)
     var commandRunner = function(command) {
       return new Promise(function(resolve, reject) {
         var child = exec(command, function(err, stdout, stderr) {
-          //console.log('stdout', stdout, 'e', err, 'stderr', stderr);
           resolve({
             command: command,
             stdout: stdout,

@@ -11,6 +11,7 @@ var request = require('request');
 var extract = require('extract-zip');
 var rimraf = require('rimraf');
 var path = require('path');
+var quitApp = require('./quit-app');
 
 var MANIFEST_URLS = {
   win: 'https://update.gitter.im/win/package.json',
@@ -104,7 +105,7 @@ function notifyWinOsxUser(version, newAppExecutable) {
         updater.runInstaller(newAppExecutable, [updater.getAppPath(), updater.getAppExec()], {});
 
         log.info('Quitting outdated app');
-        gui.App.quit();
+        quitApp();
       }
     });
   }
@@ -169,7 +170,7 @@ function overwriteOldApp(oldAppDir, executable) {
   updater.install(oldAppDir, function(err) {
     if (err) {
       log.error('update failed, shutting down installer', err.stack);
-      return gui.App.quit();
+      return quitApp();
     }
 
     // The recommended updater.run(execPath, null) [1] doesn't work properly on Windows.
@@ -182,7 +183,7 @@ function overwriteOldApp(oldAppDir, executable) {
     // wait for new version to get going...
     setTimeout(function() {
       log.info('shutting down installer');
-      gui.App.quit();
+      quitApp();
     }, 5000);
   });
 }

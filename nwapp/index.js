@@ -14,6 +14,7 @@ var os = require('os');
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
 var events = require('./utils/custom-events');
+var quitApp = require('./utils/quit-app');
 var autoUpdate = require('./utils/auto-update');
 var AutoLaunch = require('auto-launch');
 
@@ -130,7 +131,7 @@ function initGUI() {
   win.on('close', function (evt) {
     log.trace('win:close');
     if (evt === 'quit') {
-      gui.App.quit();
+      quitApp();
     } else {
       this.close(true);
     }
@@ -174,11 +175,8 @@ function initApp() {
   });
 
   events.on('settings:change:launchOnStartup', function(newValue) {
-    console.log('settings:change:launchOnStartup', newValue);
     autoLauncher[(newValue ? 'enable' : 'disable')](function(err) {
-      if(err) {
-        throw err;
-      }
+      if(err) throw err;
     });
   });
 
@@ -204,7 +202,6 @@ function initApp() {
         notifier({
           title:   msg.title,
           message: msg.text,
-          roomId:  msg.troupeId,
           link:    msg.link,
           click: function () {
             navigateWindowTo(msg.link);
@@ -300,8 +297,7 @@ function showLoggedInWindow(exec) {
 
   mainWindow.on('loaded', function () {
     // When a mac app starts up, it doesn't have focus
-    // When a Windows app starts up, it has focus
-    // TODO: Check behaviour on linux
+    // When a Windows or Linux app starts up, it has focus
     if(CLIENT !== 'osx') {
       mainWindowFocused = true;
     }
