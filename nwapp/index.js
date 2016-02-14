@@ -79,33 +79,51 @@ function reopen() {
   }
 }
 
-// initialises and adds listeners to the top level components of the UI
-function initGUI() {
-  log.trace('initGUI()');
-  win = gui.Window.get();
-  win.tray = CustomTray.get();
+function setupTray(win) {
+  var customTray = new CustomTray();
+  win.tray = customTray.get();
 
   var roomMenu = new TrayMenu();
   win.tray.menu = roomMenu.get();
 
   // FIXME: temporary fix, needs to be repainted
-  events.on('traymenu:updated', function () {
+  events.on('traymenu:updated', function() {
     win.tray.menu = roomMenu.get();
   });
 
   // Set unread badge
-  events.on('traymenu:unread', function (unreadCount) {
+  events.on('traymenu:unread', function(unreadCount) {
     win.setBadgeLabel(unreadCount.toString());
   });
 
   // Remove badge
-  events.on('traymenu:read', function () {
+  events.on('traymenu:read', function() {
     win.setBadgeLabel('');
   });
 
   if (CLIENT !== 'osx') {
     win.tray.on('click', reopen);
   }
+}
+
+// initialises and adds listeners to the top level components of the UI
+function initGUI() {
+  log.trace('initGUI()');
+  win = gui.Window.get();
+
+  // Set up tray(OSX)/menu bar(Windows)
+  if(settings.showInMacMenuBar) {
+    setupTray(win);
+  }
+
+  events.on('settings:change:showInMacMenuBar', function(newValue) {
+    if(newValue) {
+      setupTray(win);
+    }
+    else if(win.tray) {
+      win.tray.remove();
+    }
+  });
 
   gui.App.on('reopen', reopen); // When someone clicks on the dock icon, show window again.
 

@@ -6,31 +6,37 @@ var events = require('../utils/custom-events');
 
 var CLIENT_TYPE = require('../utils/client-type');
 var icon = require('../icons.json')[CLIENT_TYPE];
-var tray = new gui.Tray({ icon: icon.disconnected, alticon: icon.selected, iconsAreTemplates: false });
 
-function setIcon(icon) {
-  tray.icon = icon;
+function CustomTray() {
+  this.tray = new gui.Tray({
+    icon: icon.disconnected,
+    alticon: icon.selected,
+    iconsAreTemplates: false
+  });
+
+  events.on('user:signedOut', this.disconnect.bind(this));
+  events.on('user:signedIn', this.connect.bind(this));
+  events.on('traymenu:read', this.connect.bind(this));
+  events.on('traymenu:unread', this.unread.bind(this));
 }
 
-var controls = {
-  get: function () {
-    return tray;
-  },
-  disconnect: function () {
-    setIcon(icon.disconnected);
-  },
-  connect: function () {
-    if (!settings.token) return; // user is signed out
-    setIcon(icon.connected);
-  },
-  unread: function () {
-    setIcon(icon.unread);
-  }
+CustomTray.prototype.setIcon = function(icon) {
+  this.tray.icon = icon;
 };
 
-events.on('user:signedOut', controls.disconnect);
-events.on('user:signedIn', controls.connect);
-events.on('traymenu:read', controls.connect);
-events.on('traymenu:unread', controls.unread);
+CustomTray.prototype.get = function() {
+  return this.tray;
+};
+CustomTray.prototype.disconnect = function() {
+  this.setIcon(icon.disconnected);
+};
+CustomTray.prototype.connect = function() {
+  if (!settings.token) return; // user is signed out
+  this.setIcon(icon.connected);
+};
+CustomTray.prototype.unread = function() {
+  this.setIcon(icon.unread);
+};
 
-module.exports = controls;
+
+module.exports = CustomTray;

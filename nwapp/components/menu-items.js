@@ -16,10 +16,10 @@ module.exports = [
   {
     label: 'Show in Menu Bar',
     type: 'checkbox',
-    enabled: false,
+    checked: settings.showInMacMenuBar,
     support: ['osx'],
     click: function () {
-      // TODO: should toggle
+      settings.showInMacMenuBar = !settings.showInMacMenuBar;
     }
   },
   {
