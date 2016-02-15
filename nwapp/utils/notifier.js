@@ -8,7 +8,7 @@ var fs = require('fs-extra');
 var ensureDir = Promise.promisify(fs.ensureDir);
 var path = require('path');
 var temp = require('temp');
-var rimraf = Promise.promisify(require('rimraf'));
+var rimraf = require('rimraf');
 var request = require('request');
 var notifier = require('node-notifier');
 var objectAssign = require('object-assign');
@@ -22,10 +22,6 @@ var win = gui.Window.get();
 var CLIENT = require('./client-type');
 var SOUNDS_ITEMS = require('../components/sound-items');
 
-function getFullUrlNotificationImageForUri(uri) {
-  if (!uri) return '';
-  if (CLIENT.match(/^osx|^win/)) return 'https://avatars.githubusercontent.com/' + uri.split('/')[1] + '?s=32';
-}
 
 function playNotificationSound() {
   var audio = win.window.document.createElement('audio');
@@ -49,48 +45,49 @@ var ensureTempAvatarDirectory = ensureDir(tempAvatarDirectory)
   .then(function() {
     return tempAvatarDirectory;
   });
+
 events.on('app:quit', function() {
   log.info('App is quiting, cleanup avatars');
-  rimraf(tempAvatarDirectory)
-    .then(function() {
-      log.info('Finished avatar cleanup');
-    });
+  try {
+    rimraf.sync(tempAvatarDirectory);
+  }
+  catch(err) {
+    log.error('Something went wrong while cleaning up the avatars: ' + err.message + err.stack);
+  }
 });
-function getFileAtUrl(url) {
+
+function downloadAndCache(url) {
+  return new Promise(function(resolve, reject) {
+    var tempFileStream = temp.createWriteStream({
+      dir: tempAvatarDirectory
+    });
+
+    tempFileStream
+      .on('finish', function() {
+        var tempFilePath = tempFileStream.path;
+        // Store it on our map as a cache lookup
+        urlFilePathCacheMap.set(url, tempFilePath);
+        resolve(tempFilePath);
+      })
+      .on('error', function(err) {
+        reject(err);
+      });
+
+    request({
+        url: url,
+        method: 'GET',
+        timeout: 750
+      })
+      .on('error', function(err) {
+        reject(err);
+      })
+      .pipe(tempFileStream);
+  });
+}
+function getFileUrlForHttpUrl(url) {
   return ensureTempAvatarDirectory.then(function() {
       var cachedFilePath = urlFilePathCacheMap.get(url);
-      if(!cachedFilePath) {
-        throw new Error('Avatar is not in the cache');
-      }
-      return cachedFilePath;
-    })
-    .catch(function(cachedFilePath) {
-      return new Promise(function(resolve, reject) {
-        var tempFileStream = temp.createWriteStream({
-          dir: tempAvatarDirectory
-        });
-
-        tempFileStream
-          .on('finish', function() {
-            var tempFilePath = tempFileStream.path;
-            // Store it on our map as a cache lookup
-            urlFilePathCacheMap.set(url, tempFilePath);
-            resolve(tempFilePath);
-          })
-          .on('error', function(err) {
-            reject(err);
-          });
-
-        request({
-            url: url,
-            method: 'GET',
-            timeout: 750
-          })
-          .on('error', function(err) {
-            reject(err);
-          })
-          .pipe(tempFileStream);
-      });
+      return cachedFilePath || downloadAndCache(url);
     })
     .then(function(filePath) {
       return 'file://' + filePath;
@@ -101,7 +98,8 @@ function getFileAtUrl(url) {
 var notifierDefaults = {
   title: '',
   message: '',
-  link: undefined,
+  // gitterHQ logo
+  icon: 'https://avatars0.githubusercontent.com/u/5990364?v=3&s=60',
   click: undefined
 };
 
@@ -110,20 +108,15 @@ module.exports = function (options) {
 
   if (!settings.showNotifications) return;
 
-  var avatarImageUrl = getFullUrlNotificationImageForUri(opts.link);
-
-  getFileAtUrl(avatarImageUrl)
+  getFileUrlForHttpUrl(opts.icon)
     // We are not worried if they couldn't fetch the image
     // as we fallback to the URL itself
     .catch(function(err) {
       log.error('Trouble getting avatar for notification' + err.message + err.stack);
-      return undefined;
+      return opts.icon;
     })
-    .then(function(tempAvatarFilePath) {
+    .then(function(imagePath) {
       playNotificationSound();
-
-      // use the local file version if available, otherwise fallback to the URL
-      var imagePath = tempAvatarFilePath || avatarImageUrl;
 
       // We use this instead of `new window.Notification(...)` because we can disable the native sound
       notifier.notify({

@@ -202,7 +202,7 @@ function initApp() {
         notifier({
           title:   msg.title,
           message: msg.text,
-          link:    msg.link,
+          icon:    msg.icon,
           click: function () {
             navigateWindowTo(msg.link);
           }
