@@ -133,7 +133,7 @@ module.exports = function (options) {
       }, function (err) {
         if(err) throw err;
       });
-      notifier.on('click', function (notifierObject, options) {
+      notifier.on('click', function() {
         if(opts.click) opts.click();
       });
     })
