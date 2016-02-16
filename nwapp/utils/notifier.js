@@ -99,7 +99,7 @@ var notifierDefaults = {
   title: '',
   message: '',
   // gitterHQ logo
-  icon: 'https://avatars0.githubusercontent.com/u/5990364?v=3&s=60',
+  icon: 'https://avatars.githubusercontent.com/u/5990364?s=60',
   click: undefined
 };
 
