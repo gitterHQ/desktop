@@ -84,13 +84,13 @@ function downloadAndCache(url) {
       .pipe(tempFileStream);
   });
 }
-function getFileUrlForHttpUrl(url) {
+function getFilePathForHttpUrl(url) {
   return ensureTempAvatarDirectory.then(function() {
       var cachedFilePath = urlFilePathCacheMap.get(url);
       return cachedFilePath || downloadAndCache(url);
     })
     .then(function(filePath) {
-      return 'file://' + filePath;
+      return filePath;
     });
 }
 
@@ -108,7 +108,7 @@ module.exports = function (options) {
 
   if (!settings.showNotifications) return;
 
-  getFileUrlForHttpUrl(opts.icon)
+  getFilePathForHttpUrl(opts.icon)
     // We are not worried if they couldn't fetch the image
     // as we fallback to the URL itself
     .catch(function(err) {
@@ -122,7 +122,6 @@ module.exports = function (options) {
       notifier.notify({
         title: opts.title,
         message: opts.message,
-        // absolute path
         icon: imagePath,
         // Only Notification Center or Windows Toasters
         // We handle the sound outside of this above

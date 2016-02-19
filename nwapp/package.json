@@ -29,7 +29,7 @@
     "gitter-realtime-client": "^1.0.0",
     "jfs": "^0.2.4",
     "loglevel": "^1.2.0",
-    "node-notifier": "^4.4.0",
+    "node-notifier": "^4.5.0",
     "node-webkit-updater": "^0.2.3",
     "node-webkit-winstate": "^1.1.0",
     "oauth": "^0.9.12",
