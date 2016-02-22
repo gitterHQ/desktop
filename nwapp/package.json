@@ -3,6 +3,10 @@
   "description": "Where developers come to talk.",
   "version": "3.0.0",
   "main": "app://gitter/index.html",
+  "engineStrict": true,
+  "engines": {
+    "npm" : "^3.0.0"
+  },
   "window": {
     "icon": "./img/logo.png",
     "show": false,
