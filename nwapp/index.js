@@ -49,10 +49,10 @@ var autoLauncher = new AutoLaunch({
 
 var checkFileExistSync = function(target) {
   try {
-    return fs.statSync(target);
+    return !!fs.statSync(target);
   }
   catch(err) {
-    return false;
+    // swallow the error
   }
 
   return false;
@@ -63,16 +63,18 @@ var checkFileExistSync = function(target) {
   log.info('argv:', argv);
   log.info('version:', pkg.version);
 
-  var currentInstallPath = argv['current-install-path'];
-  var newUpdaterExecutablePath = argv['new-executable'];
-  // We used to(<=2.4.0) just pass in as the first and second paramers but this is not as
-  // nice when we want to add other CLI parameters in later
-  if(!currentInstallPath && checkFileExistSync(argv._[0])) {
-    currentInstallPath = argv._[0];
+  var legacyCurrentInstallPath;
+  var legacyNewUpdaterExecutablePath;
+  if (argv.length === 2 && checkFileExistSync(argv._[0]) && checkFileExistSync(argv._[1])) {
+    // This only happens if we have a pre v3.0.0 desktop app attempting to update to v3+
+    // FIXME: remove after August 2016
+    legacyCurrentInstallPath = argv._[0];
+    legacyNewUpdaterExecutablePath = argv._[1];
   }
-  if(!newUpdaterExecutablePath && checkFileExistSync(argv._[1])) {
-    newUpdaterExecutablePath = argv._[1];
-  }
+
+  var currentInstallPath = argv['current-install-path'] || legacyCurrentInstallPath;
+  var newUpdaterExecutablePath = argv['new-executable'] || legacyNewUpdaterExecutablePath;
+
   var hasGoodParamsToUpdate = currentInstallPath && newUpdaterExecutablePath;
   log.info('Are we going into update mode? ' + (hasGoodParamsToUpdate ? 'Yes' : 'No') + '.', currentInstallPath, newUpdaterExecutablePath);
   if(hasGoodParamsToUpdate) {

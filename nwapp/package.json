@@ -36,7 +36,6 @@
     "node-notifier": "^4.5.0",
     "node-webkit-updater": "^0.2.3",
     "node-webkit-winstate": "^1.1.0",
-    "normalize-package-data": "^2.3.5",
     "oauth": "^0.9.12",
     "object-assign": "^4.0.1",
     "open": "0.0.5",

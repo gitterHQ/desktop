@@ -134,15 +134,15 @@ gulp.task('check-path-safety-for-windows', function() {
 
 gulp.task('clean', [OUTPUT_DIR, ARTEFACTS_DIR, CACHE_DIR].map(function (dir) { return 'clean:' + path.basename(dir); }));
 
-/* certificate:fetch:{{ OS }} */
-Object.keys(CERTIFICATES_FORMAT).forEach(function (OS) {
+/* cert:fetch:{{ OS }} */
+Object.keys(CERTIFICATES_FORMAT).forEach(function(OS) {
   var file = CERTIFICATES_FORMAT[OS];
   gulp.task('cert:fetch:' + OS, fetchS3.bind(null, {
     localFile: path.join(CERTIFICATES_DIR, file),
     s3Params: {
       Bucket: S3_CONSTS.buckets.certificates,
-      Key: file,
-    },
+      Key: file
+    }
   }));
 });
 
@@ -210,12 +210,10 @@ var dmg_cmd = template('./osx/create-dmg/create-dmg --icon "<%= name %>" 311 50 
 
 // Only runs on OSX (requires XCode properly configured)
 gulp.task('sign:osx', ['build'], shell.task([
-  /* */
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app/Contents/Frameworks/*',
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
   'codesign -v --display '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
   'codesign -v --verify '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app'
-    /* */
 ]));
 
 // Only runs on OSX
@@ -278,18 +276,23 @@ var pushManifestToDest = function(destinationKey) {
   });
 };
 var platformFolders = [
-  // legacy
-  'desktop',
   'osx',
   'win',
   'linux'
 ];
-platformFolders.forEach(function(platformFolder) {
-  gulp.task('manifest:push:' + platformFolder, function() {
-    return pushManifestToDest(path.join(platformFolder, 'package.json'));
-  });
+gulp.task('manifest:push:osx', function() {
+  return pushManifestToDest('osx/package.json');
 });
-gulp.task('manifest:push', platformFolders.map(function(platformFolder) { return 'manifest:push:' + platformFolder; }), function() {
+gulp.task('manifest:push:win', function() {
+  return pushManifestToDest('win/package.json');
+});
+gulp.task('manifest:push:linux', function() {
+  return Promise.all([
+    pushManifestToDest('linux32/package.json'),
+    pushManifestToDest('linux64/package.json')
+  ]);
+});
+gulp.task('manifest:push', ['manifest:push:osx', 'manifest:push:win', 'manifest:push:linux'], function() {
   return true;
 });
 

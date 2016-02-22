@@ -72,6 +72,9 @@ On osx/linux, run the following commands
  - If on osx(because of a bug with Yosemite), Open `/Library/Ruby/Gems/2.0.0/gems/ffi-1.9.10/lib/ffi/library.rb` and do the fix proposed here: https://github.com/ffi/ffi/issues/461#issuecomment-149253757
 
 1. Build all app artefacts
+  1. On osx, run `gulp cert:fetch:osx`
+     - You will need to setup [AWS CLI](https://aws.amazon.com/cli/) with your credentials `aws configure` (grab from AWS console IME)
+  1. On osx, run `gulp build:osx`
   1. On osx/linux, run `gulp build:linux`
   2. On osx/linux, run `gulp cert:fetch:win`
      - You will need to setup [AWS CLI](https://aws.amazon.com/cli/) with your credentials `aws configure` (grab from AWS console IME)
