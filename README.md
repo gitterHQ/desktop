@@ -23,9 +23,10 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the onl
 
 ### CLI parameters
 
- - `--update-check-url`: The base URL we use to check for `package.json` manifest updates. e.g. `--update-check-url=192.168.0.58:3010`
+ - `--update-url`: The base URL we use to check for `package.json` manifest updates and downloads. e.g. `--update-url=192.168.0.58:3010`
  - `--current-install-path`: The path to install/overwrite and files from an update
  - `--new-executable`: In combination with `--current-install-path`, will start the app in update mode and run the specified executable to update
+ - `--passthrough-remote-debugging-port`: Used to debug the update process when we spin up new instances. Just like [`--remote-debugging-port=port`](https://github.com/nwjs/nw.js/wiki/debugging-with-devtools). Unfortunately, nw.js doesn't expose `--remote-debugging-port=port` when used so we need to use a slightly different name.
 
 We use nw.js, so you can use any of those CLI parameters like [`--remote-debugging-port=port`](https://github.com/nwjs/nw.js/wiki/debugging-with-devtools)
 
