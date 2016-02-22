@@ -19,6 +19,8 @@ var quitApp = require('./quit-app');
 
 
 
+// You can change the place we use to check and download updates with this CLI parameter `--update-url=192.168.0.58:3010`
+// We use this for testing a release
 var updateUrlOption = argv['update-url'];
 var transposeUpdateUrl = function(targetUrl) {
   var parsedTargetUrl = urlParse(targetUrl);
@@ -38,8 +40,6 @@ var MANIFEST_URLS = {
   osx: 'https://update.gitter.im/osx/package.json',
   linux: 'https://update.gitter.im/linux/package.json'
 };
-// You can change the place we use to check updates with this CLI parameter `--update-check-url=192.168.0.58:3010`
-// We use this for testing a release
 Object.keys(MANIFEST_URLS).forEach(function(key) {
   MANIFEST_URLS[key] = transposeUpdateUrl(MANIFEST_URLS[key]);
 });
