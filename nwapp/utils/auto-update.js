@@ -21,8 +21,9 @@ var quitApp = require('./quit-app');
 
 // You can change the place we use to check and download updates with this CLI parameter `--update-url=192.168.0.58:3010`
 // We use this for testing a release
-var updateUrlOption = argv['update-url'];
+var updateUrlOption = argv['update-url'] || '';
 var transposeUpdateUrl = function(targetUrl) {
+  targetUrl = targetUrl || '';
   var parsedTargetUrl = urlParse(targetUrl);
   var parsedUpdateUrl = urlParse(updateUrlOption);
   parsedTargetUrl.protocol = parsedUpdateUrl.protocol || 'http:';
