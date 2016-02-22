@@ -5,8 +5,10 @@
 var SUPPORTED_PLATFORMS = ['win32', 'linux32', 'linux64', 'osx64'];
 
 var gulp = require('gulp');
+var through = require('through2');
 var gutil = require('gulp-util');
 var shell = require('gulp-shell');
+var exhaustively = require('stream-exhaust');
 var Promise = require('bluebird');
 var os = require('os');
 var fs = require('fs');
@@ -95,6 +97,35 @@ function pushS3(params) {
   });
 }
 
+
+// Look for any troubled path lengths so we don't run into problems on the Windows builds: https://github.com/gitterHQ/desktop/issues/59
+// If you are running into issues, you can just install the sub-depedency on the root level
+// This shouldn't be a problem if we decide to require npm 3 for the desktop builds
+gulp.task('check-path-safety-for-windows', function() {
+  var stream = gulp.src('./nwapp/**/*', {read: false})
+    .pipe(through.obj(function(chunk, enc, cb) {
+        var baseWindowsCheckPath = 'C:\\Users\\some-longish-username\\AppData\\Local\\Temp\\nw2128_17940';
+        var pathToCheck = path.join(baseWindowsCheckPath, path.relative(chunk.base, chunk.path));
+
+        if(pathToCheck.length > 256) {
+            var nodeModulesMessage = '';
+            if(pathToCheck.match('node_modules')) {
+              nodeModulesMessage = ' --- You can try installing a sub-depedency as a root-level module to shorten up the paths';
+            }
+          throw new gutil.PluginError('checking-path-lengths', {
+            message: 'You have a path length that exceeds 256 characters and will cause issues on Windows: ' + chunk.path + '. Note, we checked with a base path: ' + baseWindowsCheckPath + nodeModulesMessage
+          });
+        }
+
+        this.push(chunk);
+        cb();
+    }));
+
+    // Avoid the high-water mark: https://github.com/gulpjs/gulp/issues/1356
+    return exhaustively(stream);
+});
+
+
 [OUTPUT_DIR, ARTEFACTS_DIR, CACHE_DIR].forEach(function (dir) {
   gulp.task('clean:' + path.basename(dir).toLowerCase(), function (done) {
     rimraf(dir, done);
@@ -118,7 +149,7 @@ Object.keys(CERTIFICATES_FORMAT).forEach(function (OS) {
 /* fetches the current os certificate */
 gulp.task('cert:fetch', ['cert:fetch:' + CURRENT_OS]);
 
-gulp.task('build', ['clean:opt', 'clean:artefacts'], function (done) {
+gulp.task('build', ['clean:opt', 'clean:artefacts', 'check-path-safety-for-windows'], function (done) {
   fs.mkdirSync(ARTEFACTS_DIR);
   var builder = new Builder({
     buildDir:   OUTPUT_DIR,
