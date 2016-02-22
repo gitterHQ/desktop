@@ -1,12 +1,13 @@
 /* jshint node: true */
 'use strict';
 
-var gutil = require('gulp-util');
 
 var SUPPORTED_PLATFORMS = ['win32', 'linux32', 'linux64', 'osx64'];
 
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var shell = require('gulp-shell');
+var Promise = require('bluebird');
 var os = require('os');
 var fs = require('fs');
 var s3 = require('s3');
@@ -71,7 +72,7 @@ var s3Client = s3.createClient({
   s3Options: {
     accessKeyId: S3_CONSTS.credentials && S3_CONSTS.credentials.key,
     secretAccessKey: S3_CONSTS.credentials && S3_CONSTS.credentials.secret
-  },
+  }
 });
 
 function namespace(/* args */) {
@@ -85,11 +86,13 @@ function fetchS3(params, done) {
   downloader.on('end', done);
 }
 
-function pushS3(params, done) {
+function pushS3(params) {
   var uploader = s3Client.uploadFile(params);
   uploader.on('error', S3_CONSTS.handleError.bind(uploader));
   uploader.on('progress', S3_CONSTS.handleProgress.bind(uploader, 'Uploading', params.localFile));
-  uploader.on('end', done);
+  return Promise.fromCallback(function(cb) {
+    uploader.on('end', cb);
+  });
 }
 
 [OUTPUT_DIR, ARTEFACTS_DIR, CACHE_DIR].forEach(function (dir) {
@@ -204,8 +207,8 @@ gulp.task('autoupdate:zip:osx', shell.task([
   'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/osx.zip',
 ]));
 
-gulp.task('autoupdate:push:osx', function (done) {
-  pushS3({
+gulp.task('autoupdate:push:osx', function() {
+  return pushS3({
     localFile: ARTEFACTS_DIR + '/osx.zip',
     s3Params: {
       Bucket: S3_CONSTS.buckets.updates,
@@ -213,11 +216,11 @@ gulp.task('autoupdate:push:osx', function (done) {
       CacheControl: 'public, max-age=0, no-cache',
       ACL: 'public-read'
     }
-  }, done);
+  });
 });
 
-gulp.task('autoupdate:push:win', function (done) {
-  pushS3({
+gulp.task('autoupdate:push:win', function() {
+  return pushS3({
     localFile: ARTEFACTS_DIR + '/win32.zip',
     s3Params: {
       Bucket: S3_CONSTS.buckets.updates,
@@ -225,19 +228,31 @@ gulp.task('autoupdate:push:win', function (done) {
       CacheControl: 'public, max-age=0, no-cache',
       ACL: 'public-read'
     }
-  }, done);
+  });
 });
 
-gulp.task('manifest:push', function (done) {
-  pushS3({
-    localFile: SOURCE_DIR + '/package.json',
-    s3Params: {
-      Bucket: S3_CONSTS.buckets.updates,
-      Key: 'desktop/package.json',
-      CacheControl: 'public, max-age=0, no-cache',
-      ACL: 'public-read'
-    }
-  }, done);
+gulp.task('manifest:push', function() {
+  var pushManifestToDest = function(destinationKey) {
+    return pushS3({
+      localFile: SOURCE_DIR + '/package.json',
+      s3Params: {
+        Bucket: S3_CONSTS.buckets.updates,
+        Key: destinationKey,
+        CacheControl: 'public, max-age=0, no-cache',
+        ACL: 'public-read'
+      }
+    });
+  };
+
+  return Promise.all([
+    // legacy
+    pushManifestToDest('desktop/package.json'),
+    // The new way is using separate dirs (see `./nwapp/utils/auto-update.js`)
+    // So we can push one platform at a time to test
+    pushManifestToDest('win/package.json'),
+    pushManifestToDest('osx/package.json'),
+    pushManifestToDest('linux/package.json')
+  ]);
 });
 
 gulp.task('identity', function (done) {
@@ -249,8 +264,8 @@ Object.keys(ARTEFACTS).forEach(function (platform) {
 
   var LATEST_TEMPLATE = template('latest_<%= platform %>.html');
 
-  gulp.task(namespace('artefacts', 'push', platform), function (done) {
-    pushS3({
+  gulp.task(namespace('artefacts', 'push', platform), function() {
+    return pushS3({
       localFile: path.join(ARTEFACTS_DIR, ARTEFACTS[platform]),
       s3Params: {
         Bucket: S3_CONSTS.buckets.updates,
@@ -258,16 +273,20 @@ Object.keys(ARTEFACTS).forEach(function (platform) {
         CacheControl: 'public, max-age=0, no-cache',
         ACL: 'public-read'
       }
-    }, done);
+    });
   });
 
   // LATEST_HTML_TEMPLATE
   gulp.task(namespace('redirect', 'source', platform), function (done) {
-    fs.writeFile(path.join(ARTEFACTS_DIR, LATEST_TEMPLATE({ platform: platform })), LATEST_HTML_TEMPLATE({ url: ARTEFACTS_URL[platform] }), done);
+    fs.writeFile(
+      path.join(ARTEFACTS_DIR, LATEST_TEMPLATE({ platform: platform })),
+      LATEST_HTML_TEMPLATE({ url: ARTEFACTS_URL[platform] }),
+      done
+    );
   });
 
-  gulp.task(namespace('redirect', 'push', platform), function (done) {
-    pushS3({
+  gulp.task(namespace('redirect', 'push', platform), function() {
+    return pushS3({
       localFile: path.join(ARTEFACTS_DIR, LATEST_TEMPLATE({ platform: platform })),
       s3Params: {
         Bucket: S3_CONSTS.buckets.updates,
@@ -275,7 +294,7 @@ Object.keys(ARTEFACTS).forEach(function (platform) {
         CacheControl: 'public, max-age=0, no-cache',
         ACL: 'public-read'
       }
-    }, done);
+    });
   });
 });
 
