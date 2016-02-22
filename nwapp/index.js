@@ -17,6 +17,7 @@ var Promise = require('bluebird');
 var semver = require('semver');
 var autoUpdate = require('./utils/auto-update');
 var AutoLaunch = require('auto-launch');
+var fs = require('fs');
 
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
@@ -46,18 +47,35 @@ var autoLauncher = new AutoLaunch({
   name: 'Gitter'
 });
 
+var checkFileExistSync = function(target) {
+  try {
+    return fs.statSync(target);
+  }
+  catch(err) {
+    return false;
+  }
+
+  return false;
+};
+
 (function () {
+  log.info('execPath:', process.execPath);
+  log.info('argv:', argv);
   log.info('version:', pkg.version);
 
   var currentInstallPath = argv['current-install-path'];
   var newUpdaterExecutablePath = argv['new-executable'];
-  // We used to just pass in as the first and second paramers but this is not as
+  // We used to(<=2.4.0) just pass in as the first and second paramers but this is not as
   // nice when we want to add other CLI parameters in later
-  if(semver.satisfies(manifest.version, '<=2.4.0')) {
-    currentInstallPath = argv[0];
-    newUpdaterExecutablePath = argv[1];
+  if(!currentInstallPath && checkFileExistSync(argv._[0])) {
+    currentInstallPath = argv._[0];
   }
-  if(currentInstallPath && newUpdaterExecutablePath) {
+  if(!newUpdaterExecutablePath && checkFileExistSync(argv._[1])) {
+    newUpdaterExecutablePath = argv._[1];
+  }
+  var hasGoodParamsToUpdate = currentInstallPath && newUpdaterExecutablePath;
+  log.info('Are we going into update mode? ' + (hasGoodParamsToUpdate ? 'Yes' : 'No') + '.', currentInstallPath, newUpdaterExecutablePath);
+  if(hasGoodParamsToUpdate) {
     log.info('I am a new app in a temp dir');
     log.info('I will overwrite the old app with myself and then restart it');
 

@@ -17,6 +17,22 @@ var Updater = require('node-webkit-updater');
 var notifier = require('./notifier');
 var quitApp = require('./quit-app');
 
+
+
+var updateUrlOption = argv['update-url'];
+var transposeUpdateUrl = function(targetUrl) {
+  var parsedTargetUrl = urlParse(targetUrl);
+  var parsedUpdateUrl = urlParse(updateUrlOption);
+  parsedTargetUrl.protocol = parsedUpdateUrl.protocol || 'http:';
+  parsedTargetUrl.auth = parsedUpdateUrl.auth;
+  parsedTargetUrl.hostname = parsedUpdateUrl.hostname;
+  parsedTargetUrl.port = parsedUpdateUrl.port;
+
+  var newUrl = parsedTargetUrl.toString();
+  return newUrl;
+};
+
+
 var MANIFEST_URLS = {
   win: 'https://update.gitter.im/win/package.json',
   osx: 'https://update.gitter.im/osx/package.json',
@@ -24,20 +40,10 @@ var MANIFEST_URLS = {
 };
 // You can change the place we use to check updates with this CLI parameter `--update-check-url=192.168.0.58:3010`
 // We use this for testing a release
-var updateCheckUrlOption = argv['update-check-url'];
-if(updateCheckUrlOption) {
-  Object.keys(MANIFEST_URLS).forEach(function(key) {
-    var parsedManifestUrl = urlParse(MANIFEST_URLS[key]);
-    var parsedUpdateCheckUrl = urlParse(updateCheckUrlOption);
-    parsedManifestUrl.protocol = parsedUpdateCheckUrl.protocol || 'http:';
-    parsedManifestUrl.auth = parsedUpdateCheckUrl.auth;
-    parsedManifestUrl.hostname = parsedUpdateCheckUrl.hostname;
-    parsedManifestUrl.port = parsedUpdateCheckUrl.port;
+Object.keys(MANIFEST_URLS).forEach(function(key) {
+  MANIFEST_URLS[key] = transposeUpdateUrl(MANIFEST_URLS[key]);
+});
 
-    var newManifestUrl = parsedManifestUrl.toString();
-    MANIFEST_URLS[key] = newManifestUrl;
-  });
-}
 
 
 var currentManifest = {
@@ -49,13 +55,14 @@ var currentManifest = {
 var updater = new Updater(currentManifest);
 
 
-
-var getRemoteDebuggingArgArray = function() {
+// Because nw.js doesn't pass along the `--remote-debugging-port` to the child app
+// we need to use a separate variable name
+var passthroughRemoteDebuggingPort = function() {
   // If we were debugging before, be sure to allow them to see the install
-  var remoteDebuggingPort = argv['remote-debugging-port'];
+  var remoteDebuggingPort = argv['passthrough-remote-debugging-port'];
   if(remoteDebuggingPort) {
     log.info('You will be able to monitor the new app launch with the same remote debugging port (just refresh to see new instances)', remoteDebuggingPort);
-    return ['--remote-debugging-port=' + remoteDebuggingPort];
+    return ['--remote-debugging-port=' + remoteDebuggingPort, '--passthrough-remote-debugging-port=' + remoteDebuggingPort];
   }
 
   return [];
@@ -94,9 +101,10 @@ function getUpdate(manifest, cb) {
   var platform = process.platform;
   platform = /^win/.test(platform)? 'win' : /^darwin/.test(platform)? 'mac' : 'linux' + (process.arch == 'ia32' ? '32' : '64');
 
-  var url = manifest.packages[platform].url;
+  var updateBundleUrl = transposeUpdateUrl(manifest.packages[platform].url);
 
-  download(url, function(err, zipPath) {
+  log.info('Downloading bundle from:', updateBundleUrl);
+  download(updateBundleUrl, function(err, zipPath) {
     if (err) return cb(err);
 
     unpack(zipPath, function(err, appDir) {
@@ -136,14 +144,16 @@ function notifyWinOsxUser(version, newAppExecutable) {
       title: 'Gitter ' + version + ' Available',
       message: 'Click to restart and apply update.',
       click: function() {
-        log.info('Starting new app to install itself', newAppExecutable, updater.getAppPath(), updater.getAppExec());
 
         var installerArgs = [
-          '--current-install-path', updater.getAppPath(),
-          '--new-executable', updater.getAppExec()
+          '--current-install-path=' + updater.getAppPath(),
+          '--new-executable=' + updater.getAppExec()
         ];
         // If we were debugging before, be sure to allow them to see the install
-        installerArgs = installerArgs.concat(getRemoteDebuggingArgArray);
+        installerArgs = installerArgs.concat(passthroughRemoteDebuggingPort());
+
+        log.info('Starting new app to install itself', newAppExecutable, installerArgs);
+        updater.runInstaller(newAppExecutable, installerArgs, {});
 
         log.info('Quitting outdated app');
         quitApp();
@@ -218,10 +228,10 @@ function overwriteOldApp(oldAppDir, executable) {
     // It spawns a new child process but it doesn't detach so when the installer app quits the new version also quits. :poop:
     // [1] https://github.com/edjafarov/node-webkit-updater/blob/master/examples/basic.js#L29
     // https://github.com/edjafarov/node-webkit-updater/blob/master/app/updater.js#L404-L416
-    log.info('starting new version');
     var newAppArgs = [];
     // If we were debugging before, be sure to allow them to see the new app
-    newAppArgs = newAppArgs.concat(getRemoteDebuggingArgArray);
+    newAppArgs = newAppArgs.concat(passthroughRemoteDebuggingPort());
+    log.info('starting new version', executable, newAppArgs);
     updater.run(executable, newAppArgs, {});
 
     // wait for new version to get going...

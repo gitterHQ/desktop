@@ -210,10 +210,12 @@ var dmg_cmd = template('./osx/create-dmg/create-dmg --icon "<%= name %>" 311 50 
 
 // Only runs on OSX (requires XCode properly configured)
 gulp.task('sign:osx', ['build'], shell.task([
+  /* */
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app/Contents/Frameworks/*',
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
   'codesign -v --display '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
-  'codesign -v --verify '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
+  'codesign -v --verify '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app'
+    /* */
 ]));
 
 // Only runs on OSX
@@ -262,28 +264,33 @@ gulp.task('autoupdate:push:win', function() {
   });
 });
 
-gulp.task('manifest:push', function() {
-  var pushManifestToDest = function(destinationKey) {
-    return pushS3({
-      localFile: SOURCE_DIR + '/package.json',
-      s3Params: {
-        Bucket: S3_CONSTS.buckets.updates,
-        Key: destinationKey,
-        CacheControl: 'public, max-age=0, no-cache',
-        ACL: 'public-read'
-      }
-    });
-  };
 
-  return Promise.all([
-    // legacy
-    pushManifestToDest('desktop/package.json'),
-    // The new way is using separate dirs (see `./nwapp/utils/auto-update.js`)
-    // So we can push one platform at a time to test
-    pushManifestToDest('win/package.json'),
-    pushManifestToDest('osx/package.json'),
-    pushManifestToDest('linux/package.json')
-  ]);
+
+var pushManifestToDest = function(destinationKey) {
+  return pushS3({
+    localFile: SOURCE_DIR + '/package.json',
+    s3Params: {
+      Bucket: S3_CONSTS.buckets.updates,
+      Key: destinationKey,
+      CacheControl: 'public, max-age=0, no-cache',
+      ACL: 'public-read'
+    }
+  });
+};
+var platformFolders = [
+  // legacy
+  'desktop',
+  'osx',
+  'win',
+  'linux'
+];
+platformFolders.forEach(function(platformFolder) {
+  gulp.task('manifest:push:' + platformFolder, function() {
+    return pushManifestToDest(path.join(platformFolder, 'package.json'));
+  });
+});
+gulp.task('manifest:push', platformFolders.map(function(platformFolder) { return 'manifest:push:' + platformFolder; }), function() {
+  return true;
 });
 
 gulp.task('identity', function (done) {
