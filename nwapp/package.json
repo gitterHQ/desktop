@@ -37,7 +37,10 @@
     "open": "0.0.5",
     "request": "^2.69.0",
     "rimraf": "^2.4.3",
-    "temp": "^0.8.3"
+    "semver": "^5.1.0",
+    "temp": "^0.8.3",
+    "url-parse": "^1.0.5",
+    "yargs": "^4.1.0"
   },
   "packages": {
     "win": {

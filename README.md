@@ -21,6 +21,14 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the onl
   * windows cmd: `set OAUTH_KEY=yourkey && set OAUTH_SECRET=yoursecret && npm start`
   * alternatively, put your keys and secrets in `nwapp/oauth.json`
 
+### CLI parameters
+
+ - `--update-check-url`: The base URL we use to check for `package.json` manifest updates. e.g. `--update-check-url=192.168.0.58:3010`
+ - `--current-install-path`: The path to install/overwrite and files from an update
+ - `--new-executable`: In combination with `--current-install-path`, will start the app in update mode and run the specified executable to update
+
+We use nw.js, so you can use any of those CLI parameters like [`--remote-debugging-port=port`](https://github.com/nwjs/nw.js/wiki/debugging-with-devtools)
+
 ## Tray Icon on Ubuntu
 
 To see the Gitter tray icon run:

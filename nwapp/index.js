@@ -6,17 +6,22 @@ log.setLevel('debug');
 // @CONST
 var CLIENT = require('./utils/client-type');
 
+var manifest = require('./package.json');
 var gui = require('nw.gui');
 var pkg = require('./package.json');
 var Gitter = require('gitter-realtime-client');
 var os = require('os');
 
+var argv = require('yargs')(gui.App.argv).argv;
+var Promise = require('bluebird');
+var semver = require('semver');
+var autoUpdate = require('./utils/auto-update');
+var AutoLaunch = require('auto-launch');
+
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
 var events = require('./utils/custom-events');
 var quitApp = require('./utils/quit-app');
-var autoUpdate = require('./utils/auto-update');
-var AutoLaunch = require('auto-launch');
 
 // components
 var MENU_ITEMS = require('./components/menu-items');
@@ -44,14 +49,19 @@ var autoLauncher = new AutoLaunch({
 (function () {
   log.info('version:', pkg.version);
 
-  if (gui.App.argv.length) {
+  var currentInstallPath = argv['current-install-path'];
+  var newUpdaterExecutablePath = argv['new-executable'];
+  // We used to just pass in as the first and second paramers but this is not as
+  // nice when we want to add other CLI parameters in later
+  if(semver.satisfies(manifest.version, '<=2.4.0')) {
+    currentInstallPath = argv[0];
+    newUpdaterExecutablePath = argv[1];
+  }
+  if(currentInstallPath && newUpdaterExecutablePath) {
     log.info('I am a new app in a temp dir');
     log.info('I will overwrite the old app with myself and then restart it');
 
-    var oldAppLocation = gui.App.argv[0];
-    var executable = gui.App.argv[1];
-
-    return autoUpdate.overwriteOldApp(oldAppLocation, executable);
+    return autoUpdate.overwriteOldApp(currentInstallPath, newUpdaterExecutablePath);
   }
 
   initGUI(); // intialises menu and tray, setting up event listeners for both

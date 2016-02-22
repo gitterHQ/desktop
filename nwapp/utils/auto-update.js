@@ -1,16 +1,20 @@
 'use strict';
 
-var log = require('loglevel');
-var notifier = require('./notifier');
-var packageJson = require('../package.json');
 var gui = window.require('nw.gui');
+var manifest = require('../package.json');
+var log = require('loglevel');
+var argv = require('yargs')(gui.App.argv).argv;
 var os = require('./client-type');
-var Updater = require('node-webkit-updater');
+
+var urlParse = require('url-parse');
+var rimraf = require('rimraf');
+var path = require('path');
 var temp = require('temp');
 var request = require('request');
 var extract = require('extract-zip');
-var rimraf = require('rimraf');
-var path = require('path');
+var Updater = require('node-webkit-updater');
+
+var notifier = require('./notifier');
 var quitApp = require('./quit-app');
 
 var MANIFEST_URLS = {
@@ -18,14 +22,46 @@ var MANIFEST_URLS = {
   osx: 'https://update.gitter.im/osx/package.json',
   linux: 'https://update.gitter.im/linux/package.json'
 };
+// You can change the place we use to check updates with this CLI parameter `--update-check-url=192.168.0.58:3010`
+// We use this for testing a release
+var updateCheckUrlOption = argv['update-check-url'];
+if(updateCheckUrlOption) {
+  Object.keys(MANIFEST_URLS).forEach(function(key) {
+    var parsedManifestUrl = urlParse(MANIFEST_URLS[key]);
+    var parsedUpdateCheckUrl = urlParse(updateCheckUrlOption);
+    parsedManifestUrl.protocol = parsedUpdateCheckUrl.protocol || 'http:';
+    parsedManifestUrl.auth = parsedUpdateCheckUrl.auth;
+    parsedManifestUrl.hostname = parsedUpdateCheckUrl.hostname;
+    parsedManifestUrl.port = parsedUpdateCheckUrl.port;
+
+    var newManifestUrl = parsedManifestUrl.toString();
+    MANIFEST_URLS[key] = newManifestUrl;
+  });
+}
+
 
 var currentManifest = {
-  name: packageJson.name,
-  version: packageJson.version,
+  name: manifest.name,
+  version: manifest.version,
   manifestUrl: MANIFEST_URLS[os]
 };
 
 var updater = new Updater(currentManifest);
+
+
+
+var getRemoteDebuggingArgArray = function() {
+  // If we were debugging before, be sure to allow them to see the install
+  var remoteDebuggingPort = argv['remote-debugging-port'];
+  if(remoteDebuggingPort) {
+    log.info('You will be able to monitor the new app launch with the same remote debugging port (just refresh to see new instances)', remoteDebuggingPort);
+    return ['--remote-debugging-port=' + remoteDebuggingPort];
+  }
+
+  return [];
+};
+
+
 
 function download(url, cb) {
   var tempFileStream = temp.createWriteStream('gitter-update-zip');
@@ -102,7 +138,12 @@ function notifyWinOsxUser(version, newAppExecutable) {
       click: function() {
         log.info('Starting new app to install itself', newAppExecutable, updater.getAppPath(), updater.getAppExec());
 
-        updater.runInstaller(newAppExecutable, [updater.getAppPath(), updater.getAppExec()], {});
+        var installerArgs = [
+          '--current-install-path', updater.getAppPath(),
+          '--new-executable', updater.getAppExec()
+        ];
+        // If we were debugging before, be sure to allow them to see the install
+        installerArgs = installerArgs.concat(getRemoteDebuggingArgArray);
 
         log.info('Quitting outdated app');
         quitApp();
@@ -178,7 +219,10 @@ function overwriteOldApp(oldAppDir, executable) {
     // [1] https://github.com/edjafarov/node-webkit-updater/blob/master/examples/basic.js#L29
     // https://github.com/edjafarov/node-webkit-updater/blob/master/app/updater.js#L404-L416
     log.info('starting new version');
-    updater.run(executable, [], {});
+    var newAppArgs = [];
+    // If we were debugging before, be sure to allow them to see the new app
+    newAppArgs = newAppArgs.concat(getRemoteDebuggingArgArray);
+    updater.run(executable, newAppArgs, {});
 
     // wait for new version to get going...
     setTimeout(function() {
