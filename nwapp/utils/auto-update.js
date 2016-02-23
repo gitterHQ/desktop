@@ -6,6 +6,7 @@ var log = require('loglevel');
 var argv = require('yargs')(gui.App.argv).argv;
 var os = require('./client-type');
 
+var Promise = require('bluebird');
 var urlParse = require('url-parse');
 var rimraf = require('rimraf');
 var path = require('path');
@@ -14,9 +15,32 @@ var request = require('request');
 var extract = require('extract-zip');
 var Updater = require('node-webkit-updater');
 
+var settings = require('./settings');
+var events = require('./custom-events');
 var notifier = require('./notifier');
 var quitApp = require('./quit-app');
 
+var dayTime = 24 * 60 * 60 * 1000;
+var resolveWhenUpdateNotifyTime = function() {
+  return new Promise(function(promiseResolve) {
+    var resolve = function() {
+      settings.lastUpdateNotifyTime = Date.now();
+      promiseResolve();
+    };
+
+    var timeSinceNotify = Date.now() - settings.lastUpdateNotifyTime;
+    var timeToGo = dayTime - timeSinceNotify;
+
+    if(timeSinceNotify < dayTime) {
+      setTimeout(function() {
+        resolve();
+      }, timeToGo);
+    }
+    else {
+      resolve();
+    }
+  });
+};
 
 
 // You can change the place we use to check and download updates with this CLI parameter `--update-url=192.168.0.58:3010`
@@ -123,7 +147,6 @@ function getUpdate(manifest, cb) {
 }
 
 function notifyLinuxUser(version) {
-
   function notify() {
     notifier({
       title: 'Gitter ' + version + ' Available',
@@ -131,15 +154,10 @@ function notifyLinuxUser(version) {
     });
   }
 
-  notify();
-
-  // every 30 mins, as it requires the user to manually go to gitter.im/apps
-  // so it could get annoying
-  setInterval(notify, 30 * 60 * 1000);
+  resolveWhenUpdateNotifyTime().then(notify);
 }
 
 function notifyWinOsxUser(version, newAppExecutable) {
-
   function notify() {
     notifier({
       title: 'Gitter ' + version + ' Available',
@@ -163,9 +181,7 @@ function notifyWinOsxUser(version, newAppExecutable) {
     });
   }
 
-  notify();
-
-  setInterval(notify, 5 * 60 * 1000);
+  resolveWhenUpdateNotifyTime().then(notify);
 }
 
 

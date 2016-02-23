@@ -10,6 +10,11 @@ function isBool(val) {
   return typeof val === "boolean";
 }
 
+// via http://stackoverflow.com/a/1830844/796832
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 var DEFAULT_SETTINGS = {
   showInMacMenuBar: {
     value: true,
@@ -32,6 +37,10 @@ var DEFAULT_SETTINGS = {
     validate: function (val) {
       return val >= 0 && val <= SOUNDS.length;
     }
+  },
+  lastUpdateNotifyTime: {
+    value: -1,
+    validate: isNumeric
   }
 };
 
