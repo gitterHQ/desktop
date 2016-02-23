@@ -65,7 +65,7 @@ var checkFileExistSync = function(target) {
 
   var legacyCurrentInstallPath;
   var legacyNewUpdaterExecutablePath;
-  if (argv.length === 2 && checkFileExistSync(argv._[0]) && checkFileExistSync(argv._[1])) {
+  if (argv._.length === 2 && checkFileExistSync(argv._[0]) && checkFileExistSync(argv._[1])) {
     // This only happens if we have a pre v3.0.0 desktop app attempting to update to v3+
     // FIXME: remove after August 2016
     legacyCurrentInstallPath = argv._[0];
