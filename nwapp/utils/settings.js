@@ -37,10 +37,6 @@ var DEFAULT_SETTINGS = {
     validate: function (val) {
       return val >= 0 && val <= SOUNDS.length;
     }
-  },
-  lastUpdateNotifyTime: {
-    value: -1,
-    validate: isNumeric
   }
 };
 

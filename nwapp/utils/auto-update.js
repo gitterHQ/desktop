@@ -15,31 +15,29 @@ var request = require('request');
 var extract = require('extract-zip');
 var Updater = require('node-webkit-updater');
 
-var settings = require('./settings');
-var events = require('./custom-events');
 var notifier = require('./notifier');
 var quitApp = require('./quit-app');
 
-var dayTime = 24 * 60 * 60 * 1000;
-var resolveWhenUpdateNotifyTime = function() {
-  return new Promise(function(promiseResolve) {
-    var resolve = function() {
-      settings.lastUpdateNotifyTime = Date.now();
-      promiseResolve();
-    };
 
-    var timeSinceNotify = Date.now() - settings.lastUpdateNotifyTime;
-    var timeToGo = dayTime - timeSinceNotify;
+// 10 minutes
+var notifyUpdatePollingRate = 10 * 60 * 1000;
+// 24 hours
+var notifyUpdateIntervalTime = 24 * 60 * 60 * 1000;
+var lastNotifyUpdateTime = -1;
+var scheduleUpdateNotifyCallback = function(callback) {
+  var cb = function() {
+    callback();
+    lastNotifyUpdateTime = Date.now();
+  };
 
-    if(timeSinceNotify < dayTime) {
-      setTimeout(function() {
-        resolve();
-      }, timeToGo);
+  cb();
+  setInterval(function() {
+    var timeSinceNotify = Date.now() - lastNotifyUpdateTime;
+
+    if(timeSinceNotify >= notifyUpdateIntervalTime) {
+      cb();
     }
-    else {
-      resolve();
-    }
-  });
+  }, notifyUpdatePollingRate);
 };
 
 
@@ -154,7 +152,7 @@ function notifyLinuxUser(version) {
     });
   }
 
-  resolveWhenUpdateNotifyTime().then(notify);
+  scheduleUpdateNotifyCallback(notify);
 }
 
 function notifyWinOsxUser(version, newAppExecutable) {
@@ -181,7 +179,7 @@ function notifyWinOsxUser(version, newAppExecutable) {
     });
   }
 
-  resolveWhenUpdateNotifyTime().then(notify);
+  scheduleUpdateNotifyCallback(notify);
 }
 
 
