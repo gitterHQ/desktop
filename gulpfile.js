@@ -210,10 +210,12 @@ var dmg_cmd = template('./osx/create-dmg/create-dmg --icon "<%= name %>" 311 50 
 
 // Only runs on OSX (requires XCode properly configured)
 gulp.task('sign:osx', ['build'], shell.task([
+  /* * /
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app/Contents/Frameworks/*',
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
   'codesign -v --display '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
   'codesign -v --verify '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app'
+  /* */
 ]));
 
 // Only runs on OSX
@@ -238,17 +240,13 @@ gulp.task('autoupdate:zip:osx', shell.task([
   'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/osx.zip',
 ]));
 
-gulp.task('autoupdate:push:osx', function() {
-  return pushS3({
-    localFile: ARTEFACTS_DIR + '/osx.zip',
-    s3Params: {
-      Bucket: S3_CONSTS.buckets.updates,
-      Key: 'osx/osx.zip',
-      CacheControl: 'public, max-age=0, no-cache',
-      ACL: 'public-read'
-    }
-  });
-});
+// Generate auto-updater packages for linux
+gulp.task('autoupdate:zip:linux', shell.task([
+  'cd '+ OUTPUT_DIR + '/Gitter/osx64; zip -r osx.zip ./Gitter.app > /dev/null 2>&1',
+  'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/linux32.zip',
+  'cd '+ OUTPUT_DIR + '/Gitter/osx64; zip -r osx.zip ./Gitter.app > /dev/null 2>&1',
+  'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/linux64.zip',
+]));
 
 gulp.task('autoupdate:push:win', function() {
   return pushS3({
@@ -261,6 +259,44 @@ gulp.task('autoupdate:push:win', function() {
     }
   });
 });
+
+gulp.task('autoupdate:push:osx', function() {
+  return pushS3({
+    localFile: ARTEFACTS_DIR + '/osx.zip',
+    s3Params: {
+      Bucket: S3_CONSTS.buckets.updates,
+      Key: 'osx/osx.zip',
+      CacheControl: 'public, max-age=0, no-cache',
+      ACL: 'public-read'
+    }
+  });
+});
+
+
+gulp.task('autoupdate:push:linux', function() {
+  return Promise.all([
+    pushS3({
+      localFile: ARTEFACTS_DIR + '/linux32.zip',
+      s3Params: {
+        Bucket: S3_CONSTS.buckets.updates,
+        Key: 'linux32/linux32.zip',
+        CacheControl: 'public, max-age=0, no-cache',
+        ACL: 'public-read'
+      }
+    }),
+    pushS3({
+      localFile: ARTEFACTS_DIR + '/linux64.zip',
+      s3Params: {
+        Bucket: S3_CONSTS.buckets.updates,
+        Key: 'linux64/linux64.zip',
+        CacheControl: 'public, max-age=0, no-cache',
+        ACL: 'public-read'
+      }
+    })
+  ]);
+});
+
+
 
 
 

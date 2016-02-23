@@ -21,7 +21,7 @@ var quitApp = require('./quit-app');
 
 // You can change the place we use to check and download updates with this CLI parameter `--update-url=192.168.0.58:3010`
 // We use this for testing a release
-var updateUrlOption = argv['update-url'] || '';
+var updateUrlOption = argv['update-url'] || 'https://update.gitter.im';
 var transposeUpdateUrl = function(targetUrl) {
   targetUrl = targetUrl || '';
   var parsedTargetUrl = urlParse(targetUrl);
@@ -39,7 +39,7 @@ var transposeUpdateUrl = function(targetUrl) {
 var MANIFEST_URLS = {
   win: 'https://update.gitter.im/win/package.json',
   osx: 'https://update.gitter.im/osx/package.json',
-  linux: 'https://update.gitter.im/linux/package.json'
+  linux: 'https://update.gitter.im/linux64/package.json'
 };
 Object.keys(MANIFEST_URLS).forEach(function(key) {
   MANIFEST_URLS[key] = transposeUpdateUrl(MANIFEST_URLS[key]);
@@ -145,6 +145,7 @@ function notifyWinOsxUser(version, newAppExecutable) {
       title: 'Gitter ' + version + ' Available',
       message: 'Click to restart and apply update.',
       click: function() {
+        log.info('Update notification clicked');
 
         var installerArgs = [
           '--current-install-path=' + updater.getAppPath(),
@@ -205,6 +206,9 @@ function poll() {
       });
     });
   }
+
+  // A debug way to trigger another update
+  window.debugUpdateGitter = update;
 
   // polling with setInterval can cause multiple downloads
   // to occur if left unattended, so its best to wait for the updater

@@ -52,6 +52,12 @@
     },
     "mac": {
       "url": "https://update.gitter.im/osx/osx.zip"
+    },
+    "linux32": {
+      "url": "https://update.gitter.im/linux32/linux32.zip"
+    },
+    "linux64": {
+      "url": "https://update.gitter.im/linux64/linux64.zip"
     }
   },
   "single-instance": false,

@@ -36,6 +36,16 @@ function playNotificationSound() {
   audio = null;
 }
 
+var checkActivationNotifierResponse = function(response) {
+  // 'activated', `timeout'`
+  var resp = response.trim().toLowerCase();
+  if(resp.match(/^activate/)) {
+    return true;
+  }
+
+  return false;
+};
+
 
 // Cache lookup
 var urlFilePathCacheMap = new Map();
@@ -128,16 +138,24 @@ module.exports = function (options) {
         // And we set to false because Windows 10 by default makes a separate sound
         sound: false,
         // wait with callback until user action is taken on notification
-        wait: false
-      }, function (err) {
-        if(err) throw err;
-      });
-      notifier.on('click', function() {
-        if(opts.click) opts.click();
+        wait: true
+      }, function(err, response) {
+        log.info('Notification response', response);
+        var didActivate = checkActivationNotifierResponse(response);
+
+        if(err) {
+          // If you are seeing errors on each notification on Windows,
+          // it isn't really a issue because everything works normally and
+          // we are blocked until it gets fixed: https://github.com/mikaelbr/node-notifier/issues/97
+          log.error('Problem with notification', err, err.stack);
+        }
+        if(didActivate && opts.click) {
+          opts.click();
+        }
       });
     })
     .catch(function(err) {
-      log.error('Problem with notification', err, err.stack);
+      log.error('Problem initializing notification', err, err.stack);
     });
 
 };

@@ -81,6 +81,7 @@ On osx/linux, run the following commands
   3. On windows, run `node ./windows/build.js -p thepfxcertpasswordhere`. For more information, see the [windows build readme](https://github.com/gitterHQ/desktop/blob/master/windows/README.md)
   4. On osx/linux, run `gulp autoupdate:zip:win`
   4. On osx/linux, run `gulp autoupdate:zip:osx`
+  4. On osx/linux, run `gulp autoupdate:zip:linux`
   5. On osx/linux, create the redirect pages with `gulp redirect:source`
 2. **Check that all the binaries work**. You should have:
   * GitterSetup-X.X.X.exe
@@ -100,6 +101,7 @@ On osx/linux, run the following commands
     * `gulp artefacts:push:linux64`
     * `gulp autoupdate:push:win`
     * `gulp autoupdate:push:osx`
+    * `gulp autoupdate:push:linux`
   2. on osx/linux, publish the redirects by running:
     * `gulp redirect:push:win`
     * `gulp redirect:push:linux32`

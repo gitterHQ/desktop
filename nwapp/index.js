@@ -230,10 +230,11 @@ function initApp() {
 
       if (msg.notification === 'user_notification') {
         notifier({
-          title:   msg.title,
+          title: msg.title,
           message: msg.text,
-          icon:    msg.icon,
-          click: function () {
+          icon: msg.icon,
+          click: function() {
+            log.info('Notification user_notification clicked. Moving to', msg.link);
             navigateWindowTo(msg.link);
           }
         });
