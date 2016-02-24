@@ -5,7 +5,7 @@
   "main": "app://gitter/index.html",
   "engineStrict": true,
   "engines": {
-    "npm" : "^3.0.0"
+    "npm": "^3.0.0"
   },
   "window": {
     "icon": "./img/logo.png",
@@ -31,10 +31,10 @@
     "extract-zip": "^1.0.3",
     "fs-extra": "^0.26.5",
     "gitter-realtime-client": "^1.0.0",
-    "jfs": "^0.2.4",
+    "jfs": "^0.2.6",
     "loglevel": "^1.2.0",
     "node-notifier": "^4.5.0",
-    "node-webkit-updater": "^0.2.3",
+    "node-webkit-updater": "^0.3.2",
     "node-webkit-winstate": "^1.1.0",
     "oauth": "^0.9.12",
     "object-assign": "^4.0.1",
@@ -49,6 +49,9 @@
   "packages": {
     "win": {
       "url": "https://update.gitter.im/win/win32.zip"
+    },
+    "osx": {
+      "url": "https://update.gitter.im/osx/osx.zip"
     },
     "mac": {
       "url": "https://update.gitter.im/osx/osx.zip"

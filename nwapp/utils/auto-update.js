@@ -19,6 +19,16 @@ var notifier = require('./notifier');
 var quitApp = require('./quit-app');
 
 
+var getPlatform = function() {
+  var platformString = os;
+  if(os === 'linux') {
+    platformString += (process.arch === 'ia32' ? '32' : '64');
+  }
+
+  return platformString;
+};
+
+
 // 10 minutes
 var notifyUpdatePollingRate = 10 * 60 * 1000;
 // 24 hours
@@ -61,7 +71,8 @@ var transposeUpdateUrl = function(targetUrl) {
 var MANIFEST_URLS = {
   win: 'https://update.gitter.im/win/package.json',
   osx: 'https://update.gitter.im/osx/package.json',
-  linux: 'https://update.gitter.im/linux64/package.json'
+  linux32: 'https://update.gitter.im/linux32/package.json',
+  linux64: 'https://update.gitter.im/linux64/package.json'
 };
 Object.keys(MANIFEST_URLS).forEach(function(key) {
   MANIFEST_URLS[key] = transposeUpdateUrl(MANIFEST_URLS[key]);
@@ -72,7 +83,7 @@ Object.keys(MANIFEST_URLS).forEach(function(key) {
 var currentManifest = {
   name: manifest.name,
   version: manifest.version,
-  manifestUrl: MANIFEST_URLS[os]
+  manifestUrl: MANIFEST_URLS[getPlatform()]
 };
 
 var updater = new Updater(currentManifest);
@@ -121,30 +132,44 @@ function unpack(zipPath, cb) {
 
 function getUpdate(manifest, cb) {
   // node-webkit-updater logic from hell
-  var platform = process.platform;
-  platform = /^win/.test(platform)? 'win' : /^darwin/.test(platform)? 'mac' : 'linux' + (process.arch == 'ia32' ? '32' : '64');
+  var platform = getPlatform();
+  var newPackageMap = manifest.packages[platform];
+  if(!newPackageMap) {
+    // Welp, something is not going right, we couldn't find their target in the new
+    // manifest, so tell them to go get it manually
+    notifyUpdateFallback();
 
-  var updateBundleUrl = transposeUpdateUrl(manifest.packages[platform].url);
+    var availablePlatformsString = Object.keys(manifest.packages)
+      .map(function(key) {
+        return '`' + key + '`';
+      }, '')
+      .join(', ');
 
-  log.info('Downloading bundle from:', updateBundleUrl);
-  download(updateBundleUrl, function(err, zipPath) {
-    if (err) return cb(err);
+    log.error('We couldn\'t find a package associated with your platform: `' + platform + '`, in the new manifest. Here what was available: ' + availablePlatformsString);
+  }
+  else {
+    var updateBundleUrl = transposeUpdateUrl(newPackageMap.url);
 
-    unpack(zipPath, function(err, appDir) {
+    log.info('Downloading bundle from:', updateBundleUrl);
+    download(updateBundleUrl, function(err, zipPath) {
       if (err) return cb(err);
 
-      // clean up the zip, but we have no way to track
-      // the temp appDir, so that cant be cleaned
-      rimraf(zipPath, function(err) {
+      unpack(zipPath, function(err, appDir) {
         if (err) return cb(err);
 
-        cb(null, appDir);
+        // clean up the zip, but we have no way to track
+        // the temp appDir, so that cant be cleaned
+        rimraf(zipPath, function(err) {
+          if (err) return cb(err);
+
+          cb(null, appDir);
+        });
       });
     });
-  });
+  }
 }
 
-function notifyLinuxUser(version) {
+function notifyUpdateFallback(version) {
   function notify() {
     notifier({
       title: 'Gitter ' + version + ' Available',
@@ -204,7 +229,7 @@ function poll() {
 
       if (os === 'linux') {
         // linux cannot autoupdate (yet)
-        return notifyLinuxUser(version);
+        return notifyUpdateFallback(version);
       }
 
       getUpdate(newManifest, function(err, newAppDir) {
