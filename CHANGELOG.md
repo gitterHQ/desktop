@@ -1,6 +1,14 @@
 
 # `3.0.1` - 2016-2-23
 
+- Update auto-update logic to check on start and every 24-hours after that
+- Add `packages -> osx` `package.json` manifest check entry to play more nicely with our platform checks.
+- Split out `linux32` `linux64` package manifest checks
+
+# `3.0.0` - 2016-2-23
+
+This was released but quickly pulled down due to not being happy with the legacy auto-update 5 minute polling notification when there is an update.
+
 - Update docs to add more detail on how to build
 - Upgrade to nw.js v0.12.3
    - Fixes issue where the org overview pages had an infinite loading spinner: https://github.com/gitterHQ/desktop/issues/102
@@ -18,10 +26,8 @@
 - Update `auto-update` params/logic so we can actually use cli params outside of the autoupdate process.
    - `--update-url`: Specify custom URL to check and download updates from
    - `--passthrough-remote-debugging-url`: So you can debug the new instances we pop throughout the update process
-- Update auto-update logic to check on start and every 24-hours after that
-- Add `packages -> osx` `package.json` manifest check entry to play more nicely with our platform checks.
 
-Here is the v3 PR: https://github.com/gitterHQ/desktop/pull/100
+Here is the v3 PR (note that it also has v3.0.1 changes): https://github.com/gitterHQ/desktop/pull/100
 
 # `2.4.0` - 2015-09-04
 fixes for the autoupdate process
