@@ -6,14 +6,23 @@ log.setLevel('debug');
 // @CONST
 var CLIENT = require('./utils/client-type');
 
+var manifest = require('./package.json');
 var gui = require('nw.gui');
 var pkg = require('./package.json');
 var Gitter = require('gitter-realtime-client');
+var os = require('os');
+
+var argv = require('yargs')(gui.App.argv).argv;
+var Promise = require('bluebird');
+var semver = require('semver');
+var autoUpdate = require('./utils/auto-update');
+var AutoLaunch = require('auto-launch');
+var fs = require('fs');
 
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
 var events = require('./utils/custom-events');
-var autoUpdate = require('./utils/auto-update');
+var quitApp = require('./utils/quit-app');
 
 // components
 var MENU_ITEMS = require('./components/menu-items');
@@ -31,25 +40,63 @@ process.on('uncaughtException', function (err) {
 
 var win;
 var mainWindow; // this is the chat window (logged in)
-var mainWindowFocused; // Focus tracker. NWK doesn't have a way to query if the window is in focus
+var mainWindowFocused = false; // Focus tracker. NWK doesn't have a way to query if the window is in focus
 var loginView; // log in form
 
+var autoLauncher = new AutoLaunch({
+  name: 'Gitter'
+});
+
+var checkFileExistSync = function(target) {
+  try {
+    return !!fs.statSync(target);
+  }
+  catch(err) {
+    // swallow the error
+  }
+
+  return false;
+};
+
 (function () {
+  log.info('execPath:', process.execPath);
+  log.info('argv:', argv);
   log.info('version:', pkg.version);
 
-  if (gui.App.argv.length) {
+  var legacyCurrentInstallPath;
+  var legacyNewUpdaterExecutablePath;
+  if (argv._.length === 2 && checkFileExistSync(argv._[0]) && checkFileExistSync(argv._[1])) {
+    // This only happens if we have a pre v3.0.0 desktop app attempting to update to v3+
+    // FIXME: remove after August 2016
+    legacyCurrentInstallPath = argv._[0];
+    legacyNewUpdaterExecutablePath = argv._[1];
+  }
+
+  var currentInstallPath = argv['current-install-path'] || legacyCurrentInstallPath;
+  var newUpdaterExecutablePath = argv['new-executable'] || legacyNewUpdaterExecutablePath;
+
+  var hasGoodParamsToUpdate = currentInstallPath && newUpdaterExecutablePath;
+  log.info('Are we going into update mode? ' + (hasGoodParamsToUpdate ? 'Yes' : 'No') + '.', currentInstallPath, newUpdaterExecutablePath);
+  if(hasGoodParamsToUpdate) {
     log.info('I am a new app in a temp dir');
     log.info('I will overwrite the old app with myself and then restart it');
 
-    var oldAppLocation = gui.App.argv[0];
-    var executable = gui.App.argv[1];
-
-    return autoUpdate.overwriteOldApp(oldAppLocation, executable);
+    return autoUpdate.overwriteOldApp(currentInstallPath, newUpdaterExecutablePath);
   }
 
   initGUI(); // intialises menu and tray, setting up event listeners for both
   initApp();
   autoUpdate.poll();
+
+  autoLauncher.isEnabled(function(enabled) {
+    if(enabled !== settings.launchOnStartup) {
+      autoLauncher[(settings.launchOnStartup ? 'enable' : 'disable')](function(err) {
+        if(err) {
+          throw err;
+        }
+      });
+    }
+  });
 
 })();
 
@@ -63,40 +110,58 @@ function reopen() {
   }
 }
 
-// initialises and adds listeners to the top level components of the UI
-function initGUI() {
-  log.trace('initGUI()');
-  win = gui.Window.get();
-  win.tray = CustomTray.get();
+function setupTray(win) {
+  var customTray = new CustomTray();
+  win.tray = customTray.get();
 
   var roomMenu = new TrayMenu();
   win.tray.menu = roomMenu.get();
 
   // FIXME: temporary fix, needs to be repainted
-  events.on('traymenu:updated', function () {
+  events.on('traymenu:updated', function() {
     win.tray.menu = roomMenu.get();
   });
 
   // Set unread badge
-  events.on('traymenu:unread', function (unreadCount) {
+  events.on('traymenu:unread', function(unreadCount) {
     win.setBadgeLabel(unreadCount.toString());
   });
 
   // Remove badge
-  events.on('traymenu:read', function () {
+  events.on('traymenu:read', function() {
     win.setBadgeLabel('');
   });
 
   if (CLIENT !== 'osx') {
     win.tray.on('click', reopen);
   }
+}
+
+// initialises and adds listeners to the top level components of the UI
+function initGUI() {
+  log.trace('initGUI()');
+  win = gui.Window.get();
+
+  // Set up tray(OSX)/menu bar(Windows)
+  if(settings.showInMacMenuBar) {
+    setupTray(win);
+  }
+
+  events.on('settings:change:showInMacMenuBar', function(newValue) {
+    if(newValue) {
+      setupTray(win);
+    }
+    else if(win.tray) {
+      win.tray.remove();
+    }
+  });
 
   gui.App.on('reopen', reopen); // When someone clicks on the dock icon, show window again.
 
   win.on('close', function (evt) {
     log.trace('win:close');
     if (evt === 'quit') {
-      gui.App.quit();
+      quitApp();
     } else {
       this.close(true);
     }
@@ -139,6 +204,12 @@ function initApp() {
     client = null;
   });
 
+  events.on('settings:change:launchOnStartup', function(newValue) {
+    autoLauncher[(newValue ? 'enable' : 'disable')](function(err) {
+      if(err) throw err;
+    });
+  });
+
   // Realtime client to keep track of the user rooms.
   var client = new Gitter.RealtimeClient({
     authProvider: function(cb) {
@@ -159,11 +230,11 @@ function initApp() {
 
       if (msg.notification === 'user_notification') {
         notifier({
-          title:   msg.title,
+          title: msg.title,
           message: msg.text,
-          roomId:  msg.troupeId,
-          link:    msg.link,
-          click: function () {
+          icon: msg.icon,
+          click: function() {
+            log.info('Notification user_notification clicked. Moving to', msg.link);
             navigateWindowTo(msg.link);
           }
         });
@@ -256,7 +327,12 @@ function showLoggedInWindow(exec) {
   });
 
   mainWindow.on('loaded', function () {
-    mainWindowFocused = true;
+    // When a mac app starts up, it doesn't have focus
+    // When a Windows or Linux app starts up, it has focus
+    if(CLIENT !== 'osx') {
+      mainWindowFocused = true;
+    }
+
     if (exec) {
       var iFrame = mainWindow.window.document.getElementById('mainframe');
       iFrame.onload = function () {

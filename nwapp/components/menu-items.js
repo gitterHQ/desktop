@@ -4,6 +4,7 @@ var gui = window.require('nw.gui');
 var pkg = require('../package.json');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
+var quitApp = require('../utils/quit-app');
 
 var SOUNDS = require('../utils/sounds');
 
@@ -16,20 +17,20 @@ module.exports = [
   {
     label: 'Show in Menu Bar',
     type: 'checkbox',
-    enabled: false,
+    checked: settings.showInMacMenuBar,
     support: ['osx'],
     click: function () {
-      // TODO: should toggle
+      settings.showInMacMenuBar = !settings.showInMacMenuBar;
     }
   },
   {
     label: 'Launch on startup',
     type: 'checkbox',
-    checked: false,
+    checked: settings.launchOnStartup,
     click: function () {
-      // TODO: should toggle
+      settings.launchOnStartup = !settings.launchOnStartup;
     },
-    support: []
+    support: ['linux', 'win', 'osx']
   },
   {
     type: 'separator',
@@ -71,7 +72,7 @@ module.exports = [
   },
   {
     label: 'Exit',
-    click: gui.App.quit,
+    click: quitApp,
     support: ['linux', 'win']
   }
 ].map(function (item, index) {

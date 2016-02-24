@@ -10,8 +10,17 @@ function isBool(val) {
   return typeof val === "boolean";
 }
 
+// via http://stackoverflow.com/a/1830844/796832
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 var DEFAULT_SETTINGS = {
   showInMacMenuBar: {
+    value: true,
+    validate: isBool
+  },
+  launchOnStartup: {
     value: true,
     validate: isBool
   },

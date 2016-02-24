@@ -5,6 +5,7 @@ var log = require('loglevel');
 var Gitter = require('gitter-realtime-client');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
+var quitApp = require('../utils/quit-app');
 
 function TrayMenu() {
   this.menu = new gui.Menu();
@@ -59,7 +60,7 @@ TrayMenu.prototype.addDefaults = function () {
   if (settings.token) {
     this.menu.append(new gui.MenuItem({ label: 'Sign Out', click: events.emit.bind(events, 'traymenu:signout') }));
   }
-  this.menu.append(new gui.MenuItem({ label: 'Exit Gitter', click: gui.App.quit }));
+  this.menu.append(new gui.MenuItem({ label: 'Exit Gitter', click: quitApp }));
 };
 
 TrayMenu.prototype.build = function () {

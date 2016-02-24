@@ -1,12 +1,15 @@
 /* jshint node: true */
 'use strict';
 
-var gutil = require('gulp-util');
 
 var SUPPORTED_PLATFORMS = ['win32', 'linux32', 'linux64', 'osx64'];
 
 var gulp = require('gulp');
+var through = require('through2');
+var gutil = require('gulp-util');
 var shell = require('gulp-shell');
+var exhaustively = require('stream-exhaust');
+var Promise = require('bluebird');
 var os = require('os');
 var fs = require('fs');
 var s3 = require('s3');
@@ -14,7 +17,7 @@ var path = require('path');
 var rimraf = require('rimraf');
 var manifest = require('./package.json');
 var template = require('lodash.template');
-var Builder = require('node-webkit-builder');
+var Builder = require('nw-builder');
 var appmanifest = require('./nwapp/package.json');
 
 var LATEST_HTML_TEMPLATE = template(fs.readFileSync('./latest-template.html').toString());
@@ -71,7 +74,7 @@ var s3Client = s3.createClient({
   s3Options: {
     accessKeyId: S3_CONSTS.credentials && S3_CONSTS.credentials.key,
     secretAccessKey: S3_CONSTS.credentials && S3_CONSTS.credentials.secret
-  },
+  }
 });
 
 function namespace(/* args */) {
@@ -85,12 +88,43 @@ function fetchS3(params, done) {
   downloader.on('end', done);
 }
 
-function pushS3(params, done) {
+function pushS3(params) {
   var uploader = s3Client.uploadFile(params);
   uploader.on('error', S3_CONSTS.handleError.bind(uploader));
   uploader.on('progress', S3_CONSTS.handleProgress.bind(uploader, 'Uploading', params.localFile));
-  uploader.on('end', done);
+  return Promise.fromCallback(function(cb) {
+    uploader.on('end', cb);
+  });
 }
+
+
+// Look for any troubled path lengths so we don't run into problems on the Windows builds: https://github.com/gitterHQ/desktop/issues/59
+// If you are running into issues, you can just install the sub-depedency on the root level
+// This shouldn't be a problem if we decide to require npm 3 for the desktop builds
+gulp.task('check-path-safety-for-windows', function() {
+  var stream = gulp.src('./nwapp/**/*', {read: false})
+    .pipe(through.obj(function(chunk, enc, cb) {
+        var baseWindowsCheckPath = 'C:\\Users\\some-longish-username\\AppData\\Local\\Temp\\nw2128_17940';
+        var pathToCheck = path.join(baseWindowsCheckPath, path.relative(chunk.base, chunk.path));
+
+        if(pathToCheck.length > 256) {
+            var nodeModulesMessage = '';
+            if(pathToCheck.match('node_modules')) {
+              nodeModulesMessage = ' --- You can try installing a sub-depedency as a root-level module to shorten up the paths';
+            }
+          throw new gutil.PluginError('checking-path-lengths', {
+            message: 'You have a path length that exceeds 256 characters and will cause issues on Windows: ' + chunk.path + '. Note, we checked with a base path: ' + baseWindowsCheckPath + nodeModulesMessage
+          });
+        }
+
+        this.push(chunk);
+        cb();
+    }));
+
+    // Avoid the high-water mark: https://github.com/gulpjs/gulp/issues/1356
+    return exhaustively(stream);
+});
+
 
 [OUTPUT_DIR, ARTEFACTS_DIR, CACHE_DIR].forEach(function (dir) {
   gulp.task('clean:' + path.basename(dir).toLowerCase(), function (done) {
@@ -100,22 +134,22 @@ function pushS3(params, done) {
 
 gulp.task('clean', [OUTPUT_DIR, ARTEFACTS_DIR, CACHE_DIR].map(function (dir) { return 'clean:' + path.basename(dir); }));
 
-/* certificate:fetch:{{ OS }} */
-Object.keys(CERTIFICATES_FORMAT).forEach(function (OS) {
+/* cert:fetch:{{ OS }} */
+Object.keys(CERTIFICATES_FORMAT).forEach(function(OS) {
   var file = CERTIFICATES_FORMAT[OS];
   gulp.task('cert:fetch:' + OS, fetchS3.bind(null, {
     localFile: path.join(CERTIFICATES_DIR, file),
     s3Params: {
       Bucket: S3_CONSTS.buckets.certificates,
-      Key: file,
-    },
+      Key: file
+    }
   }));
 });
 
 /* fetches the current os certificate */
 gulp.task('cert:fetch', ['cert:fetch:' + CURRENT_OS]);
 
-gulp.task('build', ['clean:opt', 'clean:artefacts'], function (done) {
+gulp.task('build', ['clean:opt', 'clean:artefacts', 'check-path-safety-for-windows'], function (done) {
   fs.mkdirSync(ARTEFACTS_DIR);
   var builder = new Builder({
     buildDir:   OUTPUT_DIR,
@@ -176,10 +210,12 @@ var dmg_cmd = template('./osx/create-dmg/create-dmg --icon "<%= name %>" 311 50 
 
 // Only runs on OSX (requires XCode properly configured)
 gulp.task('sign:osx', ['build'], shell.task([
+  /* * /
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app/Contents/Frameworks/*',
   'codesign -v -f -s "'+ SIGN_IDENTITY +'" '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
   'codesign -v --display '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
-  'codesign -v --verify '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app',
+  'codesign -v --verify '+ OUTPUT_DIR +'/Gitter/osx64/Gitter.app'
+  /* */
 ]));
 
 // Only runs on OSX
@@ -204,20 +240,16 @@ gulp.task('autoupdate:zip:osx', shell.task([
   'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/osx.zip',
 ]));
 
-gulp.task('autoupdate:push:osx', function (done) {
-  pushS3({
-    localFile: ARTEFACTS_DIR + '/osx.zip',
-    s3Params: {
-      Bucket: S3_CONSTS.buckets.updates,
-      Key: 'osx/osx.zip',
-      CacheControl: 'public, max-age=0, no-cache',
-      ACL: 'public-read'
-    }
-  }, done);
-});
+// Generate auto-updater packages for linux
+gulp.task('autoupdate:zip:linux', shell.task([
+  'cd '+ OUTPUT_DIR + '/Gitter/osx64; zip -r osx.zip ./Gitter.app > /dev/null 2>&1',
+  'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/linux32.zip',
+  'cd '+ OUTPUT_DIR + '/Gitter/osx64; zip -r osx.zip ./Gitter.app > /dev/null 2>&1',
+  'mv '+ OUTPUT_DIR + '/Gitter/osx64/osx.zip '+ ARTEFACTS_DIR + '/linux64.zip',
+]));
 
-gulp.task('autoupdate:push:win', function (done) {
-  pushS3({
+gulp.task('autoupdate:push:win', function() {
+  return pushS3({
     localFile: ARTEFACTS_DIR + '/win32.zip',
     s3Params: {
       Bucket: S3_CONSTS.buckets.updates,
@@ -225,19 +257,79 @@ gulp.task('autoupdate:push:win', function (done) {
       CacheControl: 'public, max-age=0, no-cache',
       ACL: 'public-read'
     }
-  }, done);
+  });
 });
 
-gulp.task('manifest:push', function (done) {
-  pushS3({
-    localFile: SOURCE_DIR + '/package.json',
+gulp.task('autoupdate:push:osx', function() {
+  return pushS3({
+    localFile: ARTEFACTS_DIR + '/osx.zip',
     s3Params: {
       Bucket: S3_CONSTS.buckets.updates,
-      Key: 'desktop/package.json',
+      Key: 'osx/osx.zip',
       CacheControl: 'public, max-age=0, no-cache',
       ACL: 'public-read'
     }
-  }, done);
+  });
+});
+
+
+gulp.task('autoupdate:push:linux', function() {
+  return Promise.all([
+    pushS3({
+      localFile: ARTEFACTS_DIR + '/linux32.zip',
+      s3Params: {
+        Bucket: S3_CONSTS.buckets.updates,
+        Key: 'linux32/linux32.zip',
+        CacheControl: 'public, max-age=0, no-cache',
+        ACL: 'public-read'
+      }
+    }),
+    pushS3({
+      localFile: ARTEFACTS_DIR + '/linux64.zip',
+      s3Params: {
+        Bucket: S3_CONSTS.buckets.updates,
+        Key: 'linux64/linux64.zip',
+        CacheControl: 'public, max-age=0, no-cache',
+        ACL: 'public-read'
+      }
+    })
+  ]);
+});
+
+
+
+
+
+var pushManifestToDest = function(destinationKey) {
+  return pushS3({
+    localFile: SOURCE_DIR + '/package.json',
+    s3Params: {
+      Bucket: S3_CONSTS.buckets.updates,
+      Key: destinationKey,
+      CacheControl: 'public, max-age=0, no-cache',
+      ACL: 'public-read'
+    }
+  });
+};
+var platformFolders = [
+  'osx',
+  'win',
+  'linux'
+];
+gulp.task('manifest:push:osx', function() {
+  return pushManifestToDest('osx/package.json');
+});
+gulp.task('manifest:push:win', function() {
+  return pushManifestToDest('win/package.json');
+});
+gulp.task('manifest:push:linux', function() {
+  return Promise.all([
+    pushManifestToDest('linux32/package.json'),
+    pushManifestToDest('linux64/package.json')
+  ]);
+});
+gulp.task('manifest:push', ['manifest:push:osx', 'manifest:push:win', 'manifest:push:linux'], function() {
+  return true;
 });
 
 gulp.task('identity', function (done) {
@@ -249,8 +341,8 @@ Object.keys(ARTEFACTS).forEach(function (platform) {
 
   var LATEST_TEMPLATE = template('latest_<%= platform %>.html');
 
-  gulp.task(namespace('artefacts', 'push', platform), function (done) {
-    pushS3({
+  gulp.task(namespace('artefacts', 'push', platform), function() {
+    return pushS3({
       localFile: path.join(ARTEFACTS_DIR, ARTEFACTS[platform]),
       s3Params: {
         Bucket: S3_CONSTS.buckets.updates,
@@ -258,16 +350,20 @@ Object.keys(ARTEFACTS).forEach(function (platform) {
         CacheControl: 'public, max-age=0, no-cache',
         ACL: 'public-read'
       }
-    }, done);
+    });
   });
 
   // LATEST_HTML_TEMPLATE
   gulp.task(namespace('redirect', 'source', platform), function (done) {
-    fs.writeFile(path.join(ARTEFACTS_DIR, LATEST_TEMPLATE({ platform: platform })), LATEST_HTML_TEMPLATE({ url: ARTEFACTS_URL[platform] }), done);
+    fs.writeFile(
+      path.join(ARTEFACTS_DIR, LATEST_TEMPLATE({ platform: platform })),
+      LATEST_HTML_TEMPLATE({ url: ARTEFACTS_URL[platform] }),
+      done
+    );
   });
 
-  gulp.task(namespace('redirect', 'push', platform), function (done) {
-    pushS3({
+  gulp.task(namespace('redirect', 'push', platform), function() {
+    return pushS3({
       localFile: path.join(ARTEFACTS_DIR, LATEST_TEMPLATE({ platform: platform })),
       s3Params: {
         Bucket: S3_CONSTS.buckets.updates,
@@ -275,7 +371,7 @@ Object.keys(ARTEFACTS).forEach(function (platform) {
         CacheControl: 'public, max-age=0, no-cache',
         ACL: 'public-read'
       }
-    }, done);
+    });
   });
 });
 

@@ -1,8 +1,12 @@
 {
   "name": "Gitter",
   "description": "Where developers come to talk.",
-  "version": "2.4.0",
+  "version": "3.0.1",
   "main": "app://gitter/index.html",
+  "engineStrict": true,
+  "engines": {
+    "npm": "^3.0.0"
+  },
   "window": {
     "icon": "./img/logo.png",
     "show": false,
@@ -22,25 +26,41 @@
   },
   "user-agent": "%name %ver %nwver %webkit_ver %osinfo",
   "dependencies": {
+    "auto-launch": "^1.1.1",
+    "bluebird": "^3.2.1",
     "extract-zip": "^1.0.3",
-    "gitter-realtime-client": "^0.1.13",
-    "jfs": "^0.2.4",
+    "fs-extra": "^0.26.5",
+    "gitter-realtime-client": "^1.0.0",
+    "jfs": "^0.2.6",
     "loglevel": "^1.2.0",
-    "mac-sounds": "^0.1.1",
-    "node-webkit-updater": "^0.2.3",
+    "node-notifier": "^4.5.0",
+    "node-webkit-updater": "^0.3.2",
     "node-webkit-winstate": "^1.1.0",
     "oauth": "^0.9.12",
+    "object-assign": "^4.0.1",
     "open": "0.0.5",
-    "request": "^2.61.0",
+    "request": "^2.69.0",
     "rimraf": "^2.4.3",
-    "temp": "^0.8.3"
+    "semver": "^5.1.0",
+    "temp": "^0.8.3",
+    "url-parse": "^1.0.5",
+    "yargs": "^4.1.0"
   },
   "packages": {
     "win": {
       "url": "https://update.gitter.im/win/win32.zip"
     },
+    "osx": {
+      "url": "https://update.gitter.im/osx/osx.zip"
+    },
     "mac": {
       "url": "https://update.gitter.im/osx/osx.zip"
+    },
+    "linux32": {
+      "url": "https://update.gitter.im/linux32/linux32.zip"
+    },
+    "linux64": {
+      "url": "https://update.gitter.im/linux64/linux64.zip"
     }
   },
   "single-instance": false,
