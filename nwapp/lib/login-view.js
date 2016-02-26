@@ -8,6 +8,8 @@ try {
   log.warn('nwapp/oauth.json not found. Hopefully OAUTH_KEY and OAUTH_SECRET are set...');
 }
 
+// See https://github.com/nwjs/nw.js/wiki/window#synopsis
+var gui = global.window.nwDispatcher.requireNwGui();
 var os = require('../utils/client-type');
 var OAuth2 = require('oauth').OAuth2;
 var EventEmitter = require('events').EventEmitter;
@@ -38,8 +40,15 @@ var LoginView = function(rootWindow) {
 
     // just big enough to show github login without scrollbars
     width: 1024,
-    height: 640,
+    height: 640
   });
+  var mb = new gui.Menu({
+    type: 'menubar'
+  });
+  mb.createMacBuiltin('Gitter', {
+    hideEdit: false
+  });
+  gui.Window.get().menu = mb;
 
   this.oauthWindow.on('document-end', function() {
     // gitter login page finished loading visible bits
