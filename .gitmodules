@@ -1,0 +1,3 @@
+[submodule "secrets"]
+	path = secrets
+	url = file:///Users/trevorah/Development/desktop-secrets

@@ -41,20 +41,6 @@
     }
   },
   "single-instance": false,
-  "platformOverrides": {
-    "osx64": {
-      "snapshot": "./snapshots/snapshot_osx64.bin"
-    },
-    "linux32": {
-      "snapshot": "./snapshots/snapshot_linux32.bin"
-    },
-    "linux64": {
-      "snapshot": "./snapshots/snapshot_linux64.bin"
-    },
-    "win32": {
-      "snapshot": "./snapshots/snapshot_win32.bin"
-    }
-  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
