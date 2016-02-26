@@ -11,6 +11,7 @@ var gui = require('nw.gui');
 var pkg = require('./package.json');
 var Gitter = require('gitter-realtime-client');
 var os = require('os');
+var path = require('path');
 
 var argv = require('yargs')(gui.App.argv).argv;
 var Promise = require('bluebird');
@@ -18,6 +19,7 @@ var semver = require('semver');
 var autoUpdate = require('./utils/auto-update');
 var AutoLaunch = require('auto-launch');
 var fs = require('fs');
+var deleteFile = Promise.promisify(fs.unlink);
 
 var settings = require('./utils/settings');
 var notifier = require('./utils/notifier');
@@ -32,6 +34,17 @@ var TrayMenu = require('./components/tray-menu');
 
 var LoginView = require('./lib/login-view');
 
+var checkFileExistSync = function(target) {
+  try {
+    return !!fs.statSync(target);
+  }
+  catch(err) {
+    // swallow the error
+  }
+
+  return false;
+};
+
 process.on('uncaughtException', function (err) {
   log.error('Caught exception: ' + err);
   log.error(err.stack);
@@ -43,20 +56,39 @@ var mainWindow; // this is the chat window (logged in)
 var mainWindowFocused = false; // Focus tracker. NWK doesn't have a way to query if the window is in focus
 var loginView; // log in form
 
+
+
+// Remove the legacy v2.4.0- startup location
+// so that we don't have duplicates
+// FIXME: remove after August 2016
+if(CLIENT === 'win') {
+  var windowsStartupPathPiece = 'Microsoft/Windows/Start Menu/Programs/Startup';
+  var startupBasePaths = [
+    path.join('C:/ProgramData/', windowsStartupPathPiece)
+  ];
+  if(process.env.APPDATA) {
+    startupBasePaths.push(path.join(process.env.APPDATA, windowsStartupPathPiece));
+  }
+  if(process.env.LOCALAPPDATA) {
+    startupBasePaths.push(path.join(process.env.LOCALAPPDATA, windowsStartupPathPiece));
+  }
+
+  startupBasePaths.map(function(startupBasePath) {
+    var startupPath = path.join(startupBasePath, './Gitter.lnk');
+
+    deleteFile(startupPath)
+      .then(function() {
+        log.info('Deleted legacy startup file:', startupPath);
+      })
+      .catch(function() {
+        // Swallow the error
+      });
+  });
+}
 var autoLauncher = new AutoLaunch({
   name: 'Gitter'
 });
 
-var checkFileExistSync = function(target) {
-  try {
-    return !!fs.statSync(target);
-  }
-  catch(err) {
-    // swallow the error
-  }
-
-  return false;
-};
 
 (function () {
   log.info('execPath:', process.execPath);
