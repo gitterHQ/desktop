@@ -63,9 +63,10 @@ var loginView; // log in form
 // FIXME: remove after August 2016
 if(CLIENT === 'win') {
   var windowsStartupPathPiece = 'Microsoft/Windows/Start Menu/Programs/Startup';
-  var startupBasePaths = [
-    path.join('C:/ProgramData/', windowsStartupPathPiece)
-  ];
+  var startupBasePaths = [];
+  if(process.env.SYSTEMDRIVE) {
+    startupBasePaths.push(path.join(process.env.SYSTEMDRIVE, './ProgramData', windowsStartupPathPiece));
+  }
   if(process.env.APPDATA) {
     startupBasePaths.push(path.join(process.env.APPDATA, windowsStartupPathPiece));
   }
@@ -73,15 +74,15 @@ if(CLIENT === 'win') {
     startupBasePaths.push(path.join(process.env.LOCALAPPDATA, windowsStartupPathPiece));
   }
 
-  startupBasePaths.map(function(startupBasePath) {
+  startupBasePaths.forEach(function(startupBasePath) {
     var startupPath = path.join(startupBasePath, './Gitter.lnk');
 
     deleteFile(startupPath)
       .then(function() {
         log.info('Deleted legacy startup file:', startupPath);
       })
-      .catch(function() {
-        // Swallow the error
+      .catch(function(err) {
+        log.error('Failed to cleanup legacy startup file:', startupPath);
       });
   });
 }
