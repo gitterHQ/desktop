@@ -82,7 +82,10 @@ if(CLIENT === 'win') {
         log.info('Deleted legacy startup file:', startupPath);
       })
       .catch(function(err) {
-        log.error('Failed to cleanup legacy startup file:', startupPath);
+        // Ignore the file not being found
+        if(err.code !== 'ENOENT') {
+          log.error('Failed to cleanup legacy startup file:', startupPath, err, err.stack);
+        }
       });
   });
 }
