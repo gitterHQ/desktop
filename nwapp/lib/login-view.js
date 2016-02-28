@@ -45,9 +45,11 @@ var LoginView = function(rootWindow) {
   var mb = new gui.Menu({
     type: 'menubar'
   });
-  mb.createMacBuiltin('Gitter', {
-    hideEdit: false
-  });
+  if(os === 'osx') {
+    mb.createMacBuiltin('Gitter', {
+      hideEdit: false
+    });
+  }
   gui.Window.get().menu = mb;
 
   this.oauthWindow.on('document-end', function() {
