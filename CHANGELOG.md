@@ -1,7 +1,7 @@
 
 # `3.0.3` - 2016-2-28
 
- - Fix app launch crash on non-osx platforms: #118
+ - Fix app launch crash for non-logged in users on non-OSX platforms: #118
 
 
 # `3.0.2` - 2016-2-26
