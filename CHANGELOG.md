@@ -1,4 +1,9 @@
 
+# `3.0.3` - 2016-2-28
+
+ - Fix app launch crash on non-osx platforms: #118
+
+
 # `3.0.2` - 2016-2-26
 
  - Fix copy/paste issue on GitHub login-view: #116
