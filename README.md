@@ -44,7 +44,7 @@ More info [here](http://ubuntuforums.org/showthread.php?t=2217458).
 
 ## Enabling Logging on Windows
 
-1. Install [Sawbuck](https://code.google.com/p/sawbuck/). This tool will capture logs for all chrome-based applications.
+1. Install [Sawbuck](https://github.com/google/sawbuck/releases). This tool will capture logs for all chrome-based applications.
 2. Add "Content Shell" to your list of Providers in Sawbuck by adding these registry entries to your machine (NOTE the optional Wow6432Node key for x64 machines):
   1. Find:  `HKLM\SOFTWARE\[Wow6432Node\]Google\Sawbuck\Providers`
   2. Add a subkey with the name `{6A3E50A4-7E15-4099-8413-EC94D8C2A4B6}`
