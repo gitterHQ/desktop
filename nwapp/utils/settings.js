@@ -37,7 +37,11 @@ var DEFAULT_SETTINGS = {
     validate: function (val) {
       return val >= 0 && val <= SOUNDS.length;
     }
-  }
+  },
+  startHidden: {
+    value: false,
+    validate: isBool
+  },
 };
 
 var db = new Store(gui.App.dataPath + '/gitter_preferences.json', { pretty: true }); // FIXME: pretty Boolean - should be environment dependent

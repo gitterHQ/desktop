@@ -33,6 +33,15 @@ module.exports = [
     support: ['linux', 'win', 'osx']
   },
   {
+    label: 'Start hidden',
+    type: 'checkbox',
+    checked: settings.startHidden,
+    click: function () {
+      settings.startHidden = !settings.startHidden;
+    },
+    support: ['linux', 'win', 'osx']
+  },
+  {
     type: 'separator',
   },
   {
@@ -74,7 +83,7 @@ module.exports = [
     label: 'Exit',
     click: quitApp,
     support: ['linux', 'win']
-  }
+  },
 ].map(function (item, index) {
   item.index = index; // FIXME: unsure whether this is a good way to add index
   return item;
