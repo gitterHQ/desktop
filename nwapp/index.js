@@ -278,7 +278,9 @@ function initApp() {
     });
   });
 
-  showLoggedInWindow();
+  if (settings.launchHidden !== true) {
+    showLoggedInWindow();
+  }
 }
 
 function showAuth() {

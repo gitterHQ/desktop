@@ -33,6 +33,15 @@ module.exports = [
     support: ['linux', 'win', 'osx']
   },
   {
+    label: 'Launch hidden',
+    type: 'checkbox',
+    checked: settings.launchHidden,
+    click: function () {
+      settings.launchHidden = !settings.launchHidden;
+    },
+    support: ['linux', 'win', 'osx']
+  },
+  {
     type: 'separator',
   },
   {

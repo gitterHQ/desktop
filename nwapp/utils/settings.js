@@ -24,6 +24,10 @@ var DEFAULT_SETTINGS = {
     value: true,
     validate: isBool
   },
+  launchHidden: {
+    value: false,
+    validate: isBool
+  },
   next: {
     value: false,
     validate: isBool
