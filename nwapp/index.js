@@ -278,7 +278,7 @@ function initApp() {
     });
   });
 
-  if (settings.startHidden !== true) {
+  if (settings.launchHidden !== true) {
     showLoggedInWindow();
   }
 }
