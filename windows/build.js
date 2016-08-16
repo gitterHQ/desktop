@@ -15,12 +15,14 @@ var possibleProgramFilePaths = [
 ];
 
 var possibleSignToolPaths = [
-  'Microsoft SDKs\\Windows\\v7.1\\Bin\\signtool.exe',
-  'Microsoft SDKs\\Windows\\v7.1A\\Bin\\signtool.exe',
+  'Windows Kits\\10\\bin\\x64\\signtool.exe',
+  'Windows Kits\\10\\bin\\x86\\signtool.exe',
   'Windows Kits\\8.1\\bin\\x64\\signtool.exe',
   'Windows Kits\\8.1\\bin\\x86\\signtool.exe',
   'Windows Kits\\8.0\\bin\\x64\\signtool.exe',
-  'Windows Kits\\8.0\\bin\\x86\\signtool.exe'
+  'Windows Kits\\8.0\\bin\\x86\\signtool.exe',
+  'Microsoft SDKs\\Windows\\v7.1\\Bin\\signtool.exe',
+  'Microsoft SDKs\\Windows\\v7.1A\\Bin\\signtool.exe'
 ];
 
 var statResults = possibleProgramFilePaths.reduce(function(statResults, programFilePath) {
@@ -29,19 +31,20 @@ var statResults = possibleProgramFilePaths.reduce(function(statResults, programF
     return stat(fullSignToolPath)
       .then(function() {
         return fullSignToolPath;
-      })
+      });
   }));
 }, []);
 
 
 Promise.any(statResults)
   .then(function(signToolPath) {
+    console.log('signToolPath', signToolPath);
     var certPassword = argv.password || argv.p || '';
 
     var commandList = [
-      '"' + signToolPath + '" sign /f "' + path.resolve(__dirname, '..\\certificates\\troupe-cert.pfx') + '" /p ' + certPassword + ' "' + path.resolve(__dirname, '..\\opt\\Gitter\\win32\\Gitter.exe') + '"',
+      '"' + signToolPath + '" sign /f "' + path.resolve(__dirname, '..\\certificates\\troupe-cert.pfx') + '" /p "' + certPassword + '" "' + path.resolve(__dirname, '..\\opt\\Gitter\\win32\\Gitter.exe') + '"',
       '"C:\\Program Files (x86)\\Inno Setup 5\\ISCC.exe" "' + path.resolve(__dirname, 'gitter.iss') + '"',
-      '"' + signToolPath + '" sign /f "' + path.resolve(__dirname, '..\\certificates\\troupe-cert.pfx') + '" /p ' + certPassword + ' "' + path.resolve(__dirname, '..\\artefacts\\GitterSetup*') + '"',
+      '"' + signToolPath + '" sign /f "' + path.resolve(__dirname, '..\\certificates\\troupe-cert.pfx') + '" /p "' + certPassword + '" "' + path.resolve(__dirname, '..\\artefacts\\GitterSetup*') + '"',
       'rename "' + path.resolve(__dirname, '..\\artefacts\\GitterSetup.exe') + '" "GitterSetup-' + appVersion + '.exe"',
     ];
 
@@ -55,17 +58,19 @@ Promise.any(statResults)
             error: err
           });
         });
+
+        child.stdout.pipe(process.stdout);
+        child.stderr.pipe(process.stderr);
       });
     };
 
     // Run the commands in series
-    commandList.reduce(function(seriesCommandChain, command) {
+    var commandChain = commandList.reduce(function(seriesCommandChain, command) {
       return seriesCommandChain.then(function(commandResult) {
+        console.log('commandResult', commandResult);
         if(commandResult.command) {
-          console.log('> ' + commandResult.command);
-        }
-        if(commandResult.stdout) {
-          console.log(commandResult.stdout);
+          console.log('Done: ' + commandResult.command);
+          console.log('--------------------------------------------');
         }
         if(commandResult.error) {
           console.log(commandResult.stderr);
@@ -73,11 +78,17 @@ Promise.any(statResults)
         }
 
         // Keep the chain going
+        console.log('> ' + command);
         return commandRunner(command);
       });
     }, Promise.resolve({}));
+
+    return commandChain
+      .catch(function(err) {
+        console.log('err', err, err.stack);
+      });
   })
   .catch(Promise.AggregateError, function(err) {
     // ignore any failed checks
-    console.log('Could not find the `signtool.exe`, try installing the Microsoft SDK and check that we are looking in the right place: open this file and look at `possibleSignToolPaths`');
+    console.log('Probably could not find the `signtool.exe`, try installing the Microsoft SDK and check that we are looking in the right place: open this file and look at `possibleSignToolPaths`');
   });
