@@ -1,7 +1,7 @@
 
 # `3.1.0` - 2016-8-16
 
- - Add launch hidden feature to only appear in task bar/menu bar when started: #107
+ - Add launch hidden feature to only appear in task bar/menu bar when started: #107 - Thanks @nicolas33
 
 
 # `3.0.3` - 2016-2-28
