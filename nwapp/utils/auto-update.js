@@ -1,9 +1,8 @@
 'use strict';
 
-var gui = window.require('nw.gui');
 var manifest = require('../package.json');
 var log = require('loglevel');
-var argv = require('yargs')(gui.App.argv).argv;
+var argv = require('yargs')(nw.App.argv).argv;
 var os = require('./client-type');
 
 var Promise = require('bluebird');

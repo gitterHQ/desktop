@@ -22,7 +22,7 @@ Usage: `signtool.exe sign /f troupe-cert.pfx binary.exe`
 
 ### kSign
 
-Has a GUI. Very easy to use. Just use the cert provided: `troupe-cert.pfx`
+Has a nw. Very easy to use. Just use the cert provided: `troupe-cert.pfx`
 
 ## Inno Setup
 

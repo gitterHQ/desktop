@@ -16,8 +16,7 @@ var objectAssign = require('object-assign');
 var settings = require('./settings');
 var events = require('./custom-events');
 
-var gui = window.require('nw.gui');
-var win = gui.Window.get();
+var win = nw.Window.get();
 
 var CLIENT = require('./client-type');
 var SOUNDS_ITEMS = require('../components/sound-items');

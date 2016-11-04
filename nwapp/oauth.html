@@ -2,8 +2,7 @@
   <head>
     <title>Gitter Login</title>
     <script type="text/javascript">
-      var gui = window.require('nw.gui');
-      var oauthWindow = gui.Window.get();
+      var oauthWindow = nw.Window.get();
       var code = window.location.search.match(/code=(\w+)$/);
       var error = window.location.search.match(/error=(\w+)$/);
 

@@ -7,13 +7,12 @@ log.setLevel('debug');
 var CLIENT = require('./utils/client-type');
 
 var manifest = require('./package.json');
-var gui = require('nw.gui');
 var pkg = require('./package.json');
 var Gitter = require('gitter-realtime-client');
 var os = require('os');
 var path = require('path');
 
-var argv = require('yargs')(gui.App.argv).argv;
+var argv = require('yargs')(nw.App.argv).argv;
 var Promise = require('bluebird');
 var semver = require('semver');
 var autoUpdate = require('./utils/auto-update');
@@ -176,7 +175,7 @@ function setupTray(win) {
 // initialises and adds listeners to the top level components of the UI
 function initGUI() {
   log.trace('initGUI()');
-  win = gui.Window.get();
+  win = nw.Window.get();
 
   // Set up tray(OSX)/menu bar(Windows)
   if(settings.showInMacMenuBar) {
@@ -192,7 +191,7 @@ function initGUI() {
     }
   });
 
-  gui.App.on('reopen', reopen); // When someone clicks on the dock icon, show window again.
+  nw.App.on('reopen', reopen); // When someone clicks on the dock icon, show window again.
 
   win.on('close', function (evt) {
     log.trace('win:close');
@@ -286,10 +285,10 @@ function initApp() {
 function showAuth() {
   if (loginView) return;
 
-  // whitelists app:// protocol used for the oAuth callback
-  gui.App.addOriginAccessWhitelistEntry('https://gitter.im/', 'app', 'gitter', true);
+  // whitelists chrome-extension:// protocol used for the oAuth callback
+  nw.App.addOriginAccessWhitelistEntry('https://gitter.im/', 'app', 'gitter', true);
 
-  loginView = new LoginView(gui.Window);
+  loginView = new LoginView(nw.Window);
 
   loginView.on('accessTokenReceived', function(accessToken) {
     log.trace('authWindow:loaded');
@@ -330,11 +329,10 @@ function signout() {
 function showLoggedInWindow(exec) {
   log.trace('showLoggedInWindow()');
 
-  mainWindow = gui.Window.get(
-    window.open('loggedin.html', {
-      focus: true
-    })
-  );
+  var win = nw.Window.get();
+  win.get('loggedin.html', {
+    focus: true
+  });
 
   mainWindow.setMinimumSize(400, 200);
 
@@ -402,7 +400,7 @@ function showLoggedInWindow(exec) {
   });
 
   mainWindow.on('new-win-policy', function (frame, url, policy) {
-    gui.Shell.openExternal(url);
+    nw.Shell.openExternal(url);
     policy.ignore();
   });
 }

@@ -1,5 +1,4 @@
-var gui = require('nw.gui');
-var win = gui.Window.get();
+var win = nw.Window.get();
 var frame = win.window.document.getElementById('mainframe');
 var settings = require('./utils/settings');
 var version = require('./package.json').version;

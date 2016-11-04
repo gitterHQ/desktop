@@ -1,24 +1,23 @@
 'use strict';
 
-var gui = window.require('nw.gui');
-var menu = new gui.Menu();
+var menu = new nw.Menu();
 
 function Menu(cutLabel, copyLabel, pasteLabel) {
-    var cut = new gui.MenuItem({
+    var cut = new nw.MenuItem({
       label: cutLabel || "Cut",
       click: function() {
         document.execCommand("cut");
       }
     });
 
-    var copy = new gui.MenuItem({
+    var copy = new nw.MenuItem({
       label: copyLabel || "Copy",
       click: function() {
         document.execCommand("copy");
       }
     });
 
-    var paste = new gui.MenuItem({
+    var paste = new nw.MenuItem({
       label: pasteLabel || "Paste",
       click: function() {
         document.execCommand("paste");
@@ -35,4 +34,3 @@ function Menu(cutLabel, copyLabel, pasteLabel) {
 
 
 module.exports = new Menu();
-

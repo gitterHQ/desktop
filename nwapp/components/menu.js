@@ -1,27 +1,26 @@
 'use strict';
 
 var events = require('../utils/custom-events');
-var gui = window.require('nw.gui');
 var CLIENT = require('../utils/client-type');
 
 // recursively assembles menus and sub-menus
 function assembleMenu(items, parent) {
   var fold;
 
-  parent = parent ? parent : new gui.Menu();
+  parent = parent ? parent : new nw.Menu();
 
   items.forEach(function (item) {
     // means that we have a submenu
     if (item.content && item.content.length > 0) {
-      var submenu = new gui.Menu();
+      var submenu = new nw.Menu();
       fold = assembleMenu(item.content, submenu);
     } else {
-      fold = new gui.MenuItem(item);
+      fold = new nw.MenuItem(item);
     }
 
     if (fold.type === 'contextmenu') {
       item.submenu = fold;
-      fold = new gui.MenuItem(item);
+      fold = new nw.MenuItem(item);
     }
 
     if (item.index && CLIENT === 'osx') {
@@ -36,7 +35,7 @@ function assembleMenu(items, parent) {
 
 function CustomMenu(spec) {
 
-  this.menu = new gui.Menu({ type: 'menubar' });
+  this.menu = new nw.Menu({ type: 'menubar' });
   this.items = spec.items || [];
   this.filter = spec.filter;
   this.label = spec.label;
@@ -72,9 +71,9 @@ CustomMenu.prototype.build = function () {
       assembleMenu(filteredItems, this.menu.items[0].submenu);
       break;
     default:
-      var sub = new gui.Menu();
+      var sub = new nw.Menu();
       assembleMenu(filteredItems, sub);
-      this.menu.append(new gui.MenuItem({
+      this.menu.append(new nw.MenuItem({
         label: this.label,
         submenu: sub
       }));

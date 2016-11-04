@@ -2,7 +2,7 @@
   "name": "Gitter",
   "description": "Where developers come to talk.",
   "version": "3.1.0",
-  "main": "app://gitter/index.html",
+  "main": "chrome-extension://gitter/index.html",
   "engineStrict": true,
   "engines": {
     "npm": "^3.0.0"

@@ -1,6 +1,5 @@
 'use strict';
 
-var gui = window.require('nw.gui');
 var log = require('loglevel');
 var Gitter = require('gitter-realtime-client');
 var settings = require('../utils/settings');
@@ -8,7 +7,7 @@ var events = require('../utils/custom-events');
 var quitApp = require('../utils/quit-app');
 
 function TrayMenu() {
-  this.menu = new gui.Menu();
+  this.menu = new nw.Menu();
   this.unsetRooms();
 
   events.on('user:signedOut', function () {
@@ -58,9 +57,9 @@ TrayMenu.prototype.clear = function () {
 
 TrayMenu.prototype.addDefaults = function () {
   if (settings.token) {
-    this.menu.append(new gui.MenuItem({ label: 'Sign Out', click: events.emit.bind(events, 'traymenu:signout') }));
+    this.menu.append(new nw.MenuItem({ label: 'Sign Out', click: events.emit.bind(events, 'traymenu:signout') }));
   }
-  this.menu.append(new gui.MenuItem({ label: 'Exit Gitter', click: quitApp }));
+  this.menu.append(new nw.MenuItem({ label: 'Exit Gitter', click: quitApp }));
 };
 
 TrayMenu.prototype.build = function () {
@@ -91,11 +90,11 @@ TrayMenu.prototype.addSection = function (spec) {
 
   this.menu.append(this.toLabel(spec.label));
   spec.collection.slice(0, 5).forEach(appendRoom);
-  this.menu.append(new gui.MenuItem({ type: 'separator' }));
+  this.menu.append(new nw.MenuItem({ type: 'separator' }));
 };
 
 TrayMenu.prototype.toMenuItem = function (room) {
-  return new gui.MenuItem({
+  return new nw.MenuItem({
     label: room.get('name'),
     click: function () {
       events.emit('traymenu:clicked', room.get('url'));
@@ -104,7 +103,7 @@ TrayMenu.prototype.toMenuItem = function (room) {
 };
 
 TrayMenu.prototype.toLabel = function (name) {
-  return new gui.MenuItem({
+  return new nw.MenuItem({
     label: name.toUpperCase(),
     enabled: false
   });

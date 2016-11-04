@@ -1,5 +1,4 @@
 var log = require('loglevel');
-var gui = window.require('nw.gui');
 var events = require('./custom-events');
 
 // We wrap their quit method as it doesn't emit a `quit` or `close` event that
@@ -8,5 +7,5 @@ module.exports = function() {
 	log.info('Quitting app, app:quit');
 	events.emit('app:quit');
 
-	gui.App.quit();
+	nw.App.quit();
 };

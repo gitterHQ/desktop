@@ -15,7 +15,7 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the onl
 
 1. clone this repo: `git clone git@github.com:gitterHQ/desktop.git && cd desktop`
 2. install all dependencies: `npm install`
-3. generate your own [app oAuth credentials](https://developer.gitter.im/apps) where the redirect url is `app://gitter/oauth.html`
+3. generate your own [app oAuth credentials](https://developer.gitter.im/apps) where the redirect url is `chrome-extension://gitter/oauth.html`
 4. start the app with your credentials:
   * linux/osx: `OAUTH_KEY=yourkey OAUTH_SECRET=yoursecret npm start`
   * windows cmd: `set OAUTH_KEY=yourkey && set OAUTH_SECRET=yoursecret && npm start`

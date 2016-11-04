@@ -1,6 +1,5 @@
 'use strict';
 
-var gui = window.require('nw.gui');
 var pkg = require('../package.json');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');

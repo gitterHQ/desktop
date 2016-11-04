@@ -1,6 +1,5 @@
 'use strict';
 
-var gui = window.require('nw.gui');
 var settings = require('../utils/settings');
 var events = require('../utils/custom-events');
 
@@ -8,7 +7,7 @@ var CLIENT_TYPE = require('../utils/client-type');
 var icon = require('../icons.json')[CLIENT_TYPE];
 
 function CustomTray() {
-  this.tray = new gui.Tray({
+  this.tray = new nw.Tray({
     icon: icon.disconnected,
     alticon: icon.selected,
     iconsAreTemplates: false

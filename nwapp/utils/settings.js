@@ -1,7 +1,6 @@
 'use strict';
 
 var Store = require('jfs');
-var gui = window.require('nw.gui');
 var events = require('./custom-events');
 var log = require('loglevel');
 var SOUNDS = require('./sounds');
@@ -44,7 +43,7 @@ var DEFAULT_SETTINGS = {
   }
 };
 
-var db = new Store(gui.App.dataPath + '/gitter_preferences.json', { pretty: true }); // FIXME: pretty Boolean - should be environment dependent
+var db = new Store(nw.App.dataPath + '/gitter_preferences.json', { pretty: true }); // FIXME: pretty Boolean - should be environment dependent
 
 // initial load is done synchronously
 var settings = db.getSync('settings');

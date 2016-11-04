@@ -20,7 +20,7 @@ var clientSecret = process.env.OAUTH_SECRET || oauthJson[os].secret || '';
 var baseSite = 'https://gitter.im/';
 var authorizePath = 'login/oauth/authorize';
 var accessTokenPath = 'login/oauth/token';
-var redirectUri = 'app://gitter/oauth.html';
+var redirectUri = 'chrome-extension://gitter/oauth.html';
 
 
 var LoginView = function(rootWindow) {
@@ -42,7 +42,7 @@ var LoginView = function(rootWindow) {
     width: 1024,
     height: 640
   });
-  var mb = new gui.Menu({
+  var mb = new nw.Menu({
     type: 'menubar'
   });
   if(os === 'osx') {
@@ -50,7 +50,7 @@ var LoginView = function(rootWindow) {
       hideEdit: false
     });
   }
-  gui.Window.get().menu = mb;
+  nw.Window.get().menu = mb;
 
   this.oauthWindow.on('document-end', function() {
     // gitter login page finished loading visible bits
