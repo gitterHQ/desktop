@@ -4,7 +4,7 @@ summary: Where developers come to talk
 description: gitter desktop client
 
 grade: devel # must be 'stable' to release into candidate/stable channels
-confinement: strict
+confinement: classic
 
 apps:
   gitter:
