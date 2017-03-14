@@ -8,7 +8,7 @@ confinement: strict
 
 apps:
   gitter:
-    command: $SNAP/opt/Gitter/linux64/Gitter
+    command: opt/Gitter/linux64/Gitter
     plugs: [browser-support, network, network-bind, x11, opengl]
 
 parts:
