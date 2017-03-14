@@ -1,0 +1,18 @@
+name: gitter
+version: master
+summary: Where developers come to talk
+description: gitter desktop client
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: strict
+
+apps:
+  gitter:
+    command: $SNAP/opt/Gitter/linux64/Gitter
+    plugs: [browser-support, network, network-bind, x11, opengl]
+
+parts:
+  desktop:
+    source: https://update.gitter.im/linux64/gitter_3.1.0_amd64.deb
+    source-type: deb
+    plugin: dump
