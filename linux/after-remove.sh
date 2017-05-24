@@ -18,7 +18,7 @@ do
 done
 
 # Link to the Gitter binary
-rm /usr/local/bin/gitter
+rm -f /usr/local/bin/gitter
 
 # Unity Launcher icon
-rm /usr/share/applications/gitter.desktop
+rm -f /usr/share/applications/gitter.desktop
