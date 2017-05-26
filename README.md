@@ -19,7 +19,7 @@ The Gitter Desktop client is written using [NW.js](http://nwjs.io/), but the onl
 4. start the app with your credentials:
   * linux/osx: `OAUTH_KEY=yourkey OAUTH_SECRET=yoursecret npm start`
   * windows cmd: `set OAUTH_KEY=yourkey && set OAUTH_SECRET=yoursecret && npm start`
-  * alternatively, put your keys and secrets in `nwapp/oauth.json`
+  * alternatively, put your keys and secrets in `nwapp/oauth.json` like this example, where `"osx"` represents your platform as defined [here](nwapp/utils/client-type.js): `{ "osx": { "KEY": "yourkey", "SECRET": "yoursecret" }}`.
 
 ### CLI parameters
 
@@ -71,7 +71,7 @@ On osx/linux, run the following commands
  - `brew install gnu-tar` then `sudo gem install fpm`
  - If on osx(because of a bug with Yosemite), Open `/Library/Ruby/Gems/2.0.0/gems/ffi-1.9.10/lib/ffi/library.rb` and do the fix proposed here: https://github.com/ffi/ffi/issues/461#issuecomment-149253757
 
-1. Build all app artefacts
+1. Build all app artifacts
   1. On osx, run `gulp cert:fetch:osx`
      - You will need to setup [AWS CLI](https://aws.amazon.com/cli/) with your credentials `aws configure` (grab from AWS console IME)
   1. On osx, run `gulp build:osx`
